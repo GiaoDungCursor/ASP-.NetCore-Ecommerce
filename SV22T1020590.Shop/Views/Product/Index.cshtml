@@ -1,0 +1,221 @@
+@model List<SV22T1020590.Models.Catalog.Product>
+@{
+    ViewData["Title"] = "Danh mục mặt hàng";
+    var categories = ViewBag.Categories as List<SV22T1020590.Models.Catalog.Category> ?? new List<SV22T1020590.Models.Catalog.Category>();
+    var searchValue = ViewBag.SearchValue as string ?? "";
+    var categoryId = ViewBag.CategoryId as int?;
+    var minPrice = ViewBag.MinPrice as decimal?;
+    var maxPrice = ViewBag.MaxPrice as decimal?;
+    var page = ViewBag.Page as int? ?? 1;
+    var pageSize = ViewBag.PageSize as int? ?? 12;
+    var rowCount = ViewBag.RowCount as int? ?? 0;
+    var totalPages = Math.Max(1, (int)Math.Ceiling(rowCount / (double)pageSize));
+    var currentPage = page;
+    var minDomain = 0m;
+    var maxDomain = 5000000m;
+    var step = 50000m;
+    var minSelected = minPrice ?? minDomain;
+    var maxSelected = maxPrice ?? maxDomain;
+}
+
+<div class="mb-5 text-center px-3" style="margin-top: 1rem;">
+    <div class="text-uppercase fw-bold mb-3" style="color: var(--st-text-muted); font-size: 0.8rem; letter-spacing: 0.1em;">
+        Trang chủ &nbsp;—&nbsp; Danh mục
+    </div>
+    <h1 class="display-4 fw-bolder mb-3" style="font-family: Manrope, Inter, sans-serif; letter-spacing: -0.03em;">Danh mục Tinh hoa</h1>
+    <p class="fs-5 mx-auto text-muted" style="max-width: 650px;">Khám phá bộ sưu tập các sản phẩm thiết yếu cao cấp được tuyển chọn dành riêng cho phong cách làm việc hiện đại.</p>
+</div>
+
+<div class="p-4 mb-5 shadow-sm" style="background: var(--st-surface-low); border-radius: 20px;">
+    <form method="get" asp-action="Index" id="catalogFilterForm">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label fw-bold text-uppercase" style="color: var(--st-text-muted); font-size: 0.75rem; letter-spacing: 0.05em;">Từ khóa</label>
+                <input class="form-control px-3 bg-white border-0" style="height: 48px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);" placeholder="Tìm kiếm mặt hàng..." name="searchValue" value="@searchValue" />
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label fw-bold text-uppercase" style="color: var(--st-text-muted); font-size: 0.75rem; letter-spacing: 0.05em;">Danh mục</label>
+                <select class="form-select px-3 bg-white border-0" style="height: 48px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);" name="categoryId">
+                    <option value="">Tất cả loại hàng</option>
+                    @foreach (var c in categories)
+                    {
+                        if (categoryId == c.CategoryID)
+                        {
+                            <option value="@c.CategoryID" selected="selected">@c.CategoryName</option>
+                        }
+                        else
+                        {
+                            <option value="@c.CategoryID">@c.CategoryName</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <div class="d-flex justify-content-between">
+                    <label class="form-label fw-bold text-uppercase" style="color: var(--st-text-muted); font-size: 0.75rem; letter-spacing: 0.05em;">Khoảng giá</label>
+                    <span class="fw-bold" style="color: var(--st-primary); font-size: 0.75rem;" id="priceRangeValue">0M - 5M</span>
+                </div>
+                <div class="d-flex align-items-center" style="height: 48px; padding: 0 1rem; background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+                    <div class="st-dual-range w-100" data-min="@minDomain" data-max="@maxDomain" data-step="@step">
+                        <div class="st-dual-range-track"></div>
+                        <div class="st-dual-range-fill" id="priceRangeFill"></div>
+                        <input type="range" id="priceRangeMin" min="@minDomain" max="@maxDomain" step="@step" value="@minSelected" />
+                        <input type="range" id="priceRangeMax" min="@minDomain" max="@maxDomain" step="@step" value="@maxSelected" />
+                    </div>
+                </div>
+                <input type="hidden" name="minPrice" id="priceMinInput" value="@minSelected" />
+                <input type="hidden" name="maxPrice" id="priceMaxInput" value="@maxSelected" />
+            </div>
+
+            <div class="col-md-2">
+                <button class="btn btn-primary w-100 fw-bold shadow-sm" style="height: 48px; border-radius: 12px; letter-spacing: 0.02em;" type="submit">Lọc kết quả</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+@if (Model.Count == 0)
+{
+    <div class="text-center py-5">
+        <div class="fs-1 mb-3">🔍</div>
+        <h3 class="fw-bolder" style="font-family: Manrope, Inter, sans-serif;">Không tìm thấy sản phẩm</h3>
+        <p class="text-muted">Rất tiếc, không có mặt hàng nào phù hợp với bộ lọc hiện tại.</p>
+    </div>
+}
+else
+{
+    <div class="st-product-grid mb-5 pb-5">
+        @foreach (var product in Model)
+        {
+            var img = string.IsNullOrWhiteSpace(product.Photo)
+                ? Url.Content("~/images/products/nophoto.png")
+                : (product.Photo.StartsWith("http", StringComparison.OrdinalIgnoreCase) ? product.Photo : Url.Content("~/images/products/" + product.Photo));
+            
+            <article class="st-product-card d-flex flex-column h-100 p-3 position-relative" style="background: var(--st-surface-card); border: none;">
+                <!-- Product Image -->
+                <div class="position-relative overflow-hidden mb-3" style="background: var(--st-surface); border-radius: 12px; aspect-ratio: 1;">
+                    <a asp-action="Detail" asp-route-id="@product.ProductID" class="d-block w-100 h-100">
+                        <img src="@img" class="w-100 h-100 object-fit-cover st-hover-scale" alt="@product.ProductName" style="transition: transform 0.3s ease; mix-blend-mode: multiply;" />
+                    </a>
+                    
+                    <!-- Quick Add Button -->
+                    <form asp-controller="Cart" asp-action="Add" method="post" class="position-absolute" style="bottom: 12px; right: 12px; z-index: 10;">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="returnUrl" value="@(Context.Request.Path + Context.Request.QueryString)" />
+                        <input type="hidden" name="productId" value="@product.ProductID" />
+                        <input type="hidden" name="quantity" value="1" />
+                        <button type="submit" class="btn btn-light rounded-circle shadow-sm p-0 d-flex align-items-center justify-content-center st-quick-add" style="width: 44px; height: 44px; backdrop-filter: blur(10px); background: rgba(255,255,255,0.9); border: 1px solid rgba(193, 198, 215, 0.3);">
+                             <span style="font-size: 1.2rem; line-height: 1;">+</span>
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Product Meta -->
+                <div class="d-flex flex-column flex-grow-1">
+                    <h3 class="h6 fw-bold mb-1 st-clamp-1" style="font-family: Manrope, Inter, sans-serif;">
+                        <a asp-action="Detail" asp-route-id="@product.ProductID" class="text-decoration-none" style="color: var(--st-text);">@product.ProductName</a>
+                    </h3>
+                    <p class="small mb-3" style="color: var(--st-text-muted);">@product.Unit</p>
+                    <div class="mt-auto fw-bolder fs-5" style="color: var(--st-primary);">@product.Price.ToString("N0") đ</div>
+                </div>
+            </article>
+        }
+    </div>
+}
+
+@if (totalPages > 1)
+{
+    int maxVisible = 7;
+    int half = maxVisible / 2;
+    int start = Math.Max(1, currentPage - half);
+    int end = Math.Min(totalPages, start + maxVisible - 1);
+    if (end - start + 1 < maxVisible)
+    {
+        start = Math.Max(1, end - maxVisible + 1);
+    }
+
+    <nav class="d-flex justify-content-center gap-2">
+        <a class="btn btn-sm btn-outline-primary @(currentPage <= 1 ? "disabled" : "")"
+           href="@Url.Action("Index", "Product", new { searchValue, categoryId, minPrice, maxPrice, page = Math.Max(1, currentPage - 1) })">Trước</a>
+
+        @if (start > 1)
+        {
+            <a class="btn btn-sm btn-light" href="@Url.Action("Index", "Product", new { searchValue, categoryId, minPrice, maxPrice, page = 1 })">1</a>
+            if (start > 2)
+            {
+                <span class="btn btn-sm btn-light disabled">...</span>
+            }
+        }
+
+        @for (int p = start; p <= end; p++)
+        {
+            if (p == currentPage)
+            {
+                <span class="btn btn-sm btn-primary">@p</span>
+            }
+            else
+            {
+                <a class="btn btn-sm btn-light" href="@Url.Action("Index", "Product", new { searchValue, categoryId, minPrice, maxPrice, page = p })">@p</a>
+            }
+        }
+
+        @if (end < totalPages)
+        {
+            if (end < totalPages - 1)
+            {
+                <span class="btn btn-sm btn-light disabled">...</span>
+            }
+            <a class="btn btn-sm btn-light" href="@Url.Action("Index", "Product", new { searchValue, categoryId, minPrice, maxPrice, page = totalPages })">@totalPages</a>
+        }
+
+        <a class="btn btn-sm btn-outline-primary @(currentPage >= totalPages ? "disabled" : "")"
+           href="@Url.Action("Index", "Product", new { searchValue, categoryId, minPrice, maxPrice, page = Math.Min(totalPages, currentPage + 1) })">Sau</a>
+    </nav>
+}
+
+@section Scripts {
+<script>
+    (function () {
+        const minSlider = document.getElementById("priceRangeMin");
+        const maxSlider = document.getElementById("priceRangeMax");
+        const minInput = document.getElementById("priceMinInput");
+        const maxInput = document.getElementById("priceMaxInput");
+        const fill = document.getElementById("priceRangeFill");
+        const text = document.getElementById("priceRangeValue");
+        if (!minSlider || !maxSlider || !minInput || !maxInput || !fill || !text) return;
+
+        const minDomain = Number(minSlider.min);
+        const maxDomain = Number(minSlider.max);
+        const step = Number(minSlider.step) || 1;
+
+        function toShort(v) {
+            return (v / 1000000).toFixed(v % 1000000 === 0 ? 0 : 1) + "M";
+        }
+
+        function sync() {
+            let minVal = Number(minSlider.value);
+            let maxVal = Number(maxSlider.value);
+
+            if (minVal > maxVal - step) minVal = maxVal - step;
+            if (maxVal < minVal + step) maxVal = minVal + step;
+
+            minSlider.value = String(minVal);
+            maxSlider.value = String(maxVal);
+            minInput.value = String(minVal);
+            maxInput.value = String(maxVal);
+
+            const left = ((minVal - minDomain) / (maxDomain - minDomain)) * 100;
+            const right = ((maxVal - minDomain) / (maxDomain - minDomain)) * 100;
+            fill.style.left = left + "%";
+            fill.style.width = (right - left) + "%";
+            text.textContent = toShort(minVal) + " - " + toShort(maxVal);
+        }
+
+        minSlider.addEventListener("input", sync);
+        maxSlider.addEventListener("input", sync);
+        sync();
+    })();
+</script>
+}

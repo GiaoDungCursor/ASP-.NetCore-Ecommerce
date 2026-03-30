@@ -1,0 +1,173 @@
+@model List<SV22T1020590.Models.Catalog.Product>
+@{
+    ViewData["Title"] = "Trang chủ";
+    ViewData["FullWidth"] = true;
+}
+
+<!-- Hero Section: Editorial Impact -->
+<section class="position-relative overflow-hidden mb-5 st-hero-section" style="min-height: 700px; margin-top: -1.8rem; background: var(--st-surface-low);">
+    <div class="position-absolute w-100 h-100 start-0 top-0">
+        <img alt="Premium Tech Hero" class="w-100 h-100" style="object-fit: cover; object-position: center;" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0vHRtuwpnUr5vHRxnI7ekKj7nVUpJH615dB1jO7XiSBL1YXXQ4-OY3ILNOfcizM8OU19o-PJKJdCtxGQ1pnhUABwzbPuPc1ildmn0M_IbJm_OUpW5aw4WG9E4JN8HGFOOEEpK2TNs041PuX9I_pz24rnQAIfgvyz0_TTfpMd1FWkQfSZtilzAHXXlOK9fv7XK206W_mcUhF1s2GZGF4_kE8pZTdB08vKgLPx0UsfpYnuchpq-ZYCDRMuJQ0tpjNCrRwkrQaZZfy4p"/>
+        <div class="position-absolute w-100 h-100 start-0 top-0 d-none d-md-block" style="background: linear-gradient(90deg, rgba(247, 249, 251, 0.95) 0%, rgba(247, 249, 251, 0.5) 50%, transparent 100%);"></div>
+        <div class="position-absolute w-100 h-100 start-0 top-0 d-md-none" style="background: linear-gradient(0deg, rgba(247, 249, 251, 1) 0%, rgba(247, 249, 251, 0.5) 60%, transparent 100%);"></div>
+    </div>
+    <div class="container st-container position-relative h-100 d-flex align-items-center" style="z-index: 10; min-height: 700px;">
+        <div class="pt-5 mt-md-5 pt-md-0" style="max-width: 600px; padding-top: 150px !important;">
+            <span class="badge text-uppercase rounded-pill mb-4" style="background-color: #a36700; color: #fffbff; padding: 0.5rem 1rem; letter-spacing: 0.1em; font-weight: 700;">Bộ sưu tập 2024</span>
+            <h1 class="display-3 fw-bolder mb-4" style="font-family: Manrope, Inter, sans-serif; letter-spacing: -0.04em; line-height: 1; color: var(--st-text);">
+                Nâng tầm <br/> <span style="color: var(--st-primary);">Cuộc sống số</span>
+            </h1>
+            <p class="fs-5 mb-5" style="color: var(--st-text-muted);">
+                Khám phá bộ sưu tập các sản phẩm công nghệ thiết yếu cao cấp được tuyển chọn cho môi trường làm việc hiện đại. Hiệu suất vượt trội, thiết kế tinh tế.
+            </p>
+            <div class="d-flex flex-wrap gap-3">
+                <a asp-controller="Product" asp-action="Index" class="btn btn-primary btn-lg px-5 py-3 fw-bold shadow-sm" style="border-radius: 8px;">Mua Ngay</a>
+                <a href="#" class="btn btn-light btn-lg px-5 py-3 fw-bold" style="border: 1px solid var(--st-outline); border-radius: 8px;">Xem Cẩm Nang</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container st-container py-5">
+    
+    <!-- Featured Categories: Bento Grid -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4 gap-3">
+        <div>
+            <h2 class="fw-bolder mb-1" style="font-family: Manrope, Inter, sans-serif;">Danh mục nổi bật</h2>
+            <p class="text-muted mb-0">Lựa chọn các sản phẩm phần cứng hàng đầu.</p>
+        </div>
+        <a asp-controller="Product" asp-action="Index" class="text-primary fw-bold text-decoration-none d-flex align-items-center gap-2">
+            Khám phá tất cả &rarr;
+        </a>
+    </div>
+
+    <!-- Asymmetric Bento Grid -->
+    <div class="row g-4 mb-5 pb-4">
+        <div class="col-md-8">
+            <div class="position-relative overflow-hidden h-100 st-hover-img" style="min-height: 480px; background: var(--st-surface-low); border-radius: var(--st-radius);">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8tYMJgnJ6fKEEzdAVgAPRdrA9z5r-Zkv5by0ICW53x8LJ_jKk07Zr9hJj8b8BPanMM4h6MKP5rd7htrsqA7tljSxBteFq1qPFqMkgpa6CFkddlxYuu05kfqcAWab4v6Czail6XiPe03ppKwmJYkRyP-Y5wuCY4Pca2DsP9GuPDGHPzUM_qJ5-Ce3dXdzQrf80y6GjlINBQhVU52UbFt7UCww7QDta8NIalVseTqcpBykuwn6ueHwo-vh1FJIOLkgy4aM-Q7Mvq_oq" class="position-absolute w-100 h-100 object-fit-cover transition-transform" />
+                <div class="position-absolute w-100 h-100 start-0 top-0" style="background: linear-gradient(0deg, rgba(0,0,0,0.6) 0%, transparent 60%);"></div>
+                <div class="position-absolute bottom-0 start-0 p-4 p-md-5 text-white">
+                    <h3 class="display-6 fw-bold mb-2" style="font-family: Manrope, Inter, sans-serif;">Âm thanh</h3>
+                    <p class="mb-0 text-white-50 fs-5 pb-2">Không gian đa tầng cho công việc & giải trí.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 d-flex flex-column gap-4">
+            <div class="position-relative overflow-hidden flex-grow-1 st-hover-img" style="min-height: 230px; background: var(--st-surface-low); border-radius: var(--st-radius);">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBADUGwOFRREPnzAywydjdbCqAlX_ud2WfdHcpaewsPZNT3mrrICT-pcY2EZN2ZxN46I2ymhKKIautxPvaQ9kGsQsSWkdiuzUw1Lw0VRUw4mHcZe2QqVwW0mlWFeDm2eSWpaQ8FaV0fQKDBT6VwV5haeppgMBxnV3pazCqzxPKFCEJSjRznHAROb3dYOpoZFHjI3ij2YCa4JCU3bLLUk4mnp945VeIbvzV0yrJR4gqxwwskvsDnt3P5RvIbyOm6p_sOQyiaidqN1s9_" class="position-absolute w-100 h-100 object-fit-cover transition-transform" />
+                <div class="position-absolute w-100 h-100 start-0 top-0" style="background: linear-gradient(0deg, rgba(0,0,0,0.6) 0%, transparent 60%);"></div>
+                <div class="position-absolute bottom-0 start-0 p-4 text-white">
+                    <h3 class="fw-bold fs-4 mb-0" style="font-family: Manrope, Inter, sans-serif;">Máy tính</h3>
+                </div>
+            </div>
+            <div class="position-relative overflow-hidden flex-grow-1 st-hover-img" style="min-height: 230px; background: var(--st-surface-low); border-radius: var(--st-radius);">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_CEzZchwsMgfHCDVc4dg-hcnssxn8AVJTIOjEr8B_LVlJ3k6CzicKlqud2-f8wJFRKEKXLlLinixiJq2Wghn7o7PIeLhEgs477v-RNOyFSoDswX6DkAzVwzm88bM81-PMu6S6zjsvFlPUq6nb7d0Jq9rb8Wvd5Gc5Q_RK0kGpdxDNqU3aTzLevGKZi--loZid1I23zbY6zmzaXbT7f6iSnYfksvMNCuoa80spvtvRM1OtKWBcUmmmaDPTIiHr_nGDvQrN7lVY-5jk" class="position-absolute w-100 h-100 object-fit-cover transition-transform" />
+                <div class="position-absolute w-100 h-100 start-0 top-0" style="background: linear-gradient(0deg, rgba(0,0,0,0.6) 0%, transparent 60%);"></div>
+                <div class="position-absolute bottom-0 start-0 p-4 text-white">
+                    <h3 class="fw-bold fs-4 mb-0" style="font-family: Manrope, Inter, sans-serif;">Phụ kiện</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Promotional Banner -->
+    <div class="bg-primary text-white p-4 p-md-5 mb-5 pb-5 position-relative overflow-hidden" style="background: var(--st-primary); border-radius: 20px;">
+        <div class="position-absolute rounded-circle bg-white opacity-25 d-none d-md-block" style="width: 400px; height: 400px; right: -100px; top: -100px; filter: blur(60px);"></div>
+        <div class="position-absolute rounded-circle opacity-50 d-none d-md-block" style="background: var(--st-primary-2); width: 400px; height: 400px; left: -100px; bottom: -100px; filter: blur(60px);"></div>
+        
+        <div class="position-relative z-1 d-flex flex-column flex-md-row justify-content-between align-items-center gap-4 px-md-3 py-md-3">
+            <div class="text-center text-md-start">
+                <h2 class="fw-bolder display-5 mb-2" style="font-family: Manrope, Inter, sans-serif; letter-spacing: -0.02em;">Khuyến Mãi Mùa Đông</h2>
+                <p class="fs-5 mb-0" style="color: #d8e2ff;">Giảm thêm 20% cho tất cả các thiết bị flagship. Số lượng có hạn.</p>
+            </div>
+            <div class="bg-white text-dark p-4 rounded-4 shadow-lg text-center" style="min-width: 280px;">
+                <h3 class="fw-bolder mb-1" style="color: var(--st-primary); font-size: 2.8rem; letter-spacing:-0.05em;">20% OFF</h3>
+                <div class="text-muted fw-bold small text-uppercase mb-4" style="letter-spacing: 0.15em;">Mã: WINTER24</div>
+                <a href="#" class="btn btn-primary w-100 fw-bold py-3" style="font-size: 1.1rem; border-radius: 8px;">Nhận Ưu Đãi</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trending Products -->
+    <div class="d-flex align-items-center mb-4 mt-5 pt-3">
+        <h2 class="fw-bolder mb-0 me-4" style="font-family: Manrope, Inter, sans-serif;">Đang thịnh hành</h2>
+        <div class="flex-grow-1" style="height: 1px; background: rgba(193, 198, 215, 0.4);"></div>
+    </div>
+
+    <div class="st-product-grid mb-5">
+        @foreach (var p in Model)
+        {
+            var img = string.IsNullOrWhiteSpace(p.Photo)
+                ? Url.Content("~/images/products/nophoto.png")
+                : (p.Photo.StartsWith("http", StringComparison.OrdinalIgnoreCase) ? p.Photo : Url.Content("~/images/products/" + p.Photo));
+            
+            <article class="st-product-card d-flex flex-column h-100 p-3 position-relative" style="background: var(--st-surface-card); border: none;">
+                <!-- Product Image -->
+                <div class="position-relative overflow-hidden mb-3" style="background: var(--st-surface); border-radius: 12px; aspect-ratio: 1;">
+                    <span class="position-absolute badge rounded-pill z-2" style="top: 12px; left: 12px; background: #a36700; color: #fffbff; border: none; font-size: 0.65rem; padding: 0.4rem 0.6rem; letter-spacing: 0.1em;">NEW</span>
+                    <a asp-controller="Product" asp-action="Detail" asp-route-id="@p.ProductID" class="d-block w-100 h-100">
+                        <img src="@img" class="w-100 h-100 object-fit-cover st-hover-scale" alt="@p.ProductName" style="transition: transform 0.3s ease; mix-blend-mode: multiply;" />
+                    </a>
+                    
+                    <!-- Quick Add Button -->
+                    <form asp-controller="Cart" asp-action="Add" method="post" class="position-absolute" style="bottom: 12px; right: 12px; z-index: 10;">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="returnUrl" value="@(Context.Request.Path + Context.Request.QueryString)" />
+                        <input type="hidden" name="productId" value="@p.ProductID" />
+                        <input type="hidden" name="quantity" value="1" />
+                        <button type="submit" class="btn btn-light rounded-circle shadow-sm p-0 d-flex align-items-center justify-content-center st-quick-add" style="width: 44px; height: 44px; backdrop-filter: blur(10px); background: rgba(255,255,255,0.9); border: 1px solid rgba(193, 198, 215, 0.3);">
+                             <span style="font-size: 1.2rem; line-height: 1;">+</span>
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Product Meta -->
+                <div class="d-flex flex-column flex-grow-1">
+                    <h3 class="h6 fw-bold mb-1 st-clamp-1" style="font-family: Manrope, Inter, sans-serif;">
+                        <a asp-controller="Product" asp-action="Detail" asp-route-id="@p.ProductID" class="text-decoration-none" style="color: var(--st-text);">@p.ProductName</a>
+                    </h3>
+                    <p class="small mb-3" style="color: var(--st-text-muted);">@p.Unit</p>
+                    <div class="mt-auto fw-bolder fs-5" style="color: var(--st-primary);">@p.Price.ToString("N0") đ</div>
+                </div>
+            </article>
+        }
+    </div>
+
+    <!-- Features Tonal Shift -->
+    <div class="row g-4 mb-5 pb-3">
+        <div class="col-md-4">
+            <div class="d-flex align-items-center gap-3 p-4 rounded-4" style="background: var(--st-surface-low);">
+                <div class="rounded-circle bg-white shadow-sm d-flex align-items-center justify-content-center" style="width: 56px; height: 56px; color: var(--st-primary);">
+                    <span style="font-size: 1.5rem;">✈️</span>
+                </div>
+                <div>
+                    <h4 class="h6 fw-bold mb-1" style="font-family: Manrope, Inter, sans-serif;">Miễn phí vận chuyển</h4>
+                    <p class="small text-muted mb-0">Cho đơn hàng trên 2,000,000đ.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="d-flex align-items-center gap-3 p-4 rounded-4" style="background: var(--st-surface-low);">
+                <div class="rounded-circle bg-white shadow-sm d-flex align-items-center justify-content-center" style="width: 56px; height: 56px; color: var(--st-primary);">
+                    <span style="font-size: 1.5rem;">🛡️</span>
+                </div>
+                <div>
+                    <h4 class="h6 fw-bold mb-1" style="font-family: Manrope, Inter, sans-serif;">Bảo hành 2 năm</h4>
+                    <p class="small text-muted mb-0">Đảm bảo hàng chính hãng.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="d-flex align-items-center gap-3 p-4 rounded-4" style="background: var(--st-surface-low);">
+                <div class="rounded-circle bg-white shadow-sm d-flex align-items-center justify-content-center" style="width: 56px; height: 56px; color: var(--st-primary);">
+                    <span style="font-size: 1.5rem;">🔒</span>
+                </div>
+                <div>
+                    <h4 class="h6 fw-bold mb-1" style="font-family: Manrope, Inter, sans-serif;">Thanh toán an toàn</h4>
+                    <p class="small text-muted mb-0">Bảo mật mọi giao dịch.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

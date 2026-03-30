@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\wwwroot\Layout.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\wwwroot\Layout.html" />
+  </ItemGroup>
+
+  <!-- Thư viện model dùng chung (Product, Customer, Order, Category, OrderDetail, ...) -->
+  <ItemGroup>
+    <ProjectReference Include="..\SV22T1020590.BusinessLayers\SV22T1020590.BusinessLayers.csproj" />
+    <ProjectReference Include="..\SV22T1020590.DataLayers\SV22T1020590.DataLayers.csproj" />
+    <ProjectReference Include="..\SV22T1020590.Models\SV22T1020590.Models.csproj" />
+  </ItemGroup>
+
+</Project>

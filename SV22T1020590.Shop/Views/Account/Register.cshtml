@@ -1,0 +1,65 @@
+@{
+    ViewData["Title"] = "Đăng ký";
+    var returnUrl = ViewData["ReturnUrl"] as string;
+}
+<div class="row justify-content-center pt-md-4 pb-5">
+    <div class="col-md-9 col-lg-8">
+        <div class="st-auth-card p-4 p-md-5 bg-white shadow-lg" style="border-radius: 24px; border: 1px solid rgba(193,198,215,0.15);">
+            <div class="text-center mb-5">
+                <h1 class="fw-bolder mb-2" style="font-family: Manrope, Inter, sans-serif; letter-spacing: -0.03em; color: var(--st-text);">Tạo tài khoản</h1>
+                <p class="small" style="color: var(--st-text-muted);">Tham gia cộng đồng mua sắm tinh hoa ngay hôm nay.</p>
+            </div>
+            <div asp-validation-summary="All" class="text-danger small mb-4"></div>
+            <form asp-action="Register" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="returnUrl" value="@returnUrl" />
+                <div class="row g-4">
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label fw-bold text-uppercase" style="color: var(--st-text-muted); font-size: 0.75rem; letter-spacing: 0.05em;">Tên hiển thị</label>
+                        <input name="customerName" class="form-control form-control-lg px-3 py-2 bg-light" style="border-radius: 12px; border: 1px solid rgba(193,198,215,0.3);" required placeholder="John Doe" />
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label fw-bold text-uppercase" style="color: var(--st-text-muted); font-size: 0.75rem; letter-spacing: 0.05em;">Tên liên hệ</label>
+                        <input name="contactName" class="form-control form-control-lg px-3 py-2 bg-light" style="border-radius: 12px; border: 1px solid rgba(193,198,215,0.3);" placeholder="Mr. John" />
+                    </div>
+                    <div class="col-md-12 mb-2">
+                        <label class="form-label fw-bold text-uppercase" style="color: var(--st-text-muted); font-size: 0.75rem; letter-spacing: 0.05em;">Email</label>
+                        <input type="email" name="email" class="form-control form-control-lg px-3 py-2 bg-light" style="border-radius: 12px; border: 1px solid rgba(193,198,215,0.3);" required placeholder="name@example.com" />
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label fw-bold text-uppercase" style="color: var(--st-text-muted); font-size: 0.75rem; letter-spacing: 0.05em;">Mật khẩu</label>
+                        <input type="password" name="password" class="form-control form-control-lg px-3 py-2 bg-light" style="border-radius: 12px; border: 1px solid rgba(193,198,215,0.3);" required placeholder="••••••••" />
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label fw-bold text-uppercase" style="color: var(--st-text-muted); font-size: 0.75rem; letter-spacing: 0.05em;">Xác nhận Mật khẩu</label>
+                        <input type="password" name="confirmPassword" class="form-control form-control-lg px-3 py-2 bg-light" style="border-radius: 12px; border: 1px solid rgba(193,198,215,0.3);" required placeholder="••••••••" />
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label fw-bold text-uppercase" style="color: var(--st-text-muted); font-size: 0.75rem; letter-spacing: 0.05em;">Tỉnh/Thành</label>
+                        <select name="province" class="form-select form-select-lg px-3 py-2 bg-light" style="border-radius: 12px; border: 1px solid rgba(193,198,215,0.3);">
+                            <option value="">Chọn tỉnh/thành...</option>
+                            @foreach (var item in await SV22T1020590.BusinessLayers.DictionaryDataService.ListProvincesAsync())
+                            {
+                                <option value="@item.ProvinceName">@item.ProvinceName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <label class="form-label fw-bold text-uppercase" style="color: var(--st-text-muted); font-size: 0.75rem; letter-spacing: 0.05em;">Số điện thoại</label>
+                        <input name="phone" class="form-control form-control-lg px-3 py-2 bg-light" style="border-radius: 12px; border: 1px solid rgba(193,198,215,0.3);" placeholder="090 123 4567" />
+                    </div>
+                    <div class="col-md-12 mb-2">
+                        <label class="form-label fw-bold text-uppercase" style="color: var(--st-text-muted); font-size: 0.75rem; letter-spacing: 0.05em;">Địa chỉ chi tiết</label>
+                        <textarea name="address" class="form-control bg-light" style="border-radius: 12px; border: 1px solid rgba(193,198,215,0.3);" rows="2" placeholder="Số nhà, đường..."></textarea>
+                    </div>
+                </div>
+                <div class="mt-5">
+                    <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold shadow-sm" style="border-radius: 12px; letter-spacing: 0.02em;">Hoàn thành Đăng ký</button>
+                </div>
+            </form>
+            <div class="text-center mt-5">
+                <p class="small" style="color: var(--st-text-muted);">Đã có tài khoản? <a asp-action="Login" class="fw-bold text-decoration-none" style="color: var(--st-primary);">Đăng nhập ngay</a></p>
+            </div>
+        </div>
+    </div>
+</div>

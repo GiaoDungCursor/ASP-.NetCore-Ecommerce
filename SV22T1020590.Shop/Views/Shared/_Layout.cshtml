@@ -1,0 +1,113 @@
+@inject SV22T1020590.Shop.Services.ShopCartService ShopCart
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Cửa hàng</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/SV22T1020590.Shop.styles.css" asp-append-version="true" />
+</head>
+<body class="d-flex flex-column min-vh-100 st-shell">
+    <header class="shop-topbar">
+        <nav class="navbar navbar-expand-lg container st-container py-3">
+            <a class="navbar-brand fw-semibold" asp-controller="Home" asp-action="Index">SV22T1020590.Shop</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navMain">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Product" asp-action="Index">Mặt hàng</a></li>
+                    <li class="nav-item"><a class="nav-link" asp-controller="Cart" asp-action="Index">Giỏ hàng</a></li>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <li class="nav-item"><a class="nav-link" asp-controller="Orders" asp-action="Index">Đơn hàng</a></li>
+                    }
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link cart-pill" asp-controller="Cart" asp-action="Index">Giỏ (@ShopCart.Count)</a>
+                    </li>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <li class="nav-item"><a class="nav-link" asp-controller="Account" asp-action="Profile">@User.Identity.Name</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Account" asp-action="Logout">Thoát</a></li>
+                    }
+                    else
+                    {
+                        <li class="nav-item"><a class="nav-link" asp-controller="Account" asp-action="Login">Đăng nhập</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Account" asp-action="Register">Đăng ký</a></li>
+                    }
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main class="flex-grow-1 shop-main @(ViewData["FullWidth"] == null ? "container st-container py-4 py-lg-5" : "")">
+        @if (TempData["Success"] != null || TempData["Error"] != null)
+        {
+            <div class="container st-container mt-4">
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success st-alert">@TempData["Success"]</div>
+                }
+                @if (TempData["Error"] != null)
+                {
+                    <div class="alert alert-danger st-alert">@TempData["Error"]</div>
+                }
+            </div>
+        }
+        @RenderBody()
+    </main>
+
+    <footer class="shop-footer border-top mt-auto">
+        <div class="container st-container py-5">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="fw-bold fs-5 mb-2">SV22T1020590.Shop</div>
+                    <p class="small text-muted mb-0">Nơi cung cấp giải pháp mua sắm hiện đại, tinh tế và chất lượng cho cuộc sống của bạn.</p>
+                </div>
+                <div class="col-6 col-md-2">
+                    <div class="footer-title">Sản phẩm</div>
+                    <a class="footer-link d-block" href="javascript:;">Mới về</a>
+                    <a class="footer-link d-block" href="javascript:;">Bán chạy</a>
+                    <a class="footer-link d-block" href="javascript:;">Khuyến mãi</a>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="footer-title">Hỗ trợ</div>
+                    <a class="footer-link d-block" href="javascript:;">Liên hệ</a>
+                    <a class="footer-link d-block" href="javascript:;">Thông tin giao hàng</a>
+                    <a class="footer-link d-block" href="javascript:;">Chính sách hoàn trả</a>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="footer-title">Pháp lý</div>
+                    <a class="footer-link d-block" asp-controller="Home" asp-action="Privacy">Privacy Policy</a>
+                    <a class="footer-link d-block" href="javascript:;">Terms of Service</a>
+                </div>
+            </div>
+            <div class="border-top mt-4 pt-3 text-center small text-muted">
+                © @DateTime.Now.Year SV22T1020590.Shop. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Global Toast Container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1055;">
+        <div id="shopToast" class="toast align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body fw-semibold" id="shopToastBody">
+                    Message
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

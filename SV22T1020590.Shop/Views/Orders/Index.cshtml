@@ -1,0 +1,92 @@
+@model List<SV22T1020590.Models.Sales.Order>
+@{
+    ViewData["Title"] = "Đơn hàng của tôi";
+    var page = ViewBag.Page as int? ?? 1;
+    var pageSize = ViewBag.PageSize as int? ?? 10;
+    var rowCount = ViewBag.RowCount as int? ?? 0;
+    var totalPages = Math.Max(1, (int)Math.Ceiling(rowCount / (double)pageSize));
+}
+
+<div class="mb-5 px-3 mt-4">
+    <h1 class="display-5 fw-bolder mb-2" style="font-family: Manrope, Inter, sans-serif; letter-spacing: -0.03em;">Lịch sử Đơn hàng</h1>
+    <p class="text-muted fs-5">Theo dõi lịch trình và quá trình giao nhận các sản phẩm của bạn.</p>
+</div>
+
+@if (Model.Count == 0)
+{
+    <div class="p-5 text-center shadow-sm" style="background: var(--st-surface-low); border-radius: 20px;">
+        <div class="fs-1 mb-3">📦</div>
+        <h3 class="fw-bolder" style="font-family: Manrope, Inter, sans-serif;">Chưa có đơn hàng</h3>
+        <p class="text-muted mb-4">Bạn chưa thực hiện giao dịch nào.</p>
+        <a asp-controller="Product" asp-action="Index" class="btn btn-primary px-4 py-2 fw-bold" style="border-radius: 10px;">Khám phá sản phẩm</a>
+    </div>
+}
+else
+{
+    var newest = Model.First();
+    <div class="p-4 p-md-5 mb-5 shadow-lg position-relative overflow-hidden" style="background: var(--st-surface); border-radius: 24px; border: 1px solid rgba(193, 198, 215, 0.2);">
+        <div class="position-absolute top-0 end-0 p-4 opacity-50 fs-1"></div>
+        <div class="row g-4 align-items-center position-relative z-1">
+            <div class="col-md-8">
+                <div class="badge rounded-pill mb-3 text-uppercase fw-bold shadow-sm" style="background: white; color: var(--st-primary); padding: 0.6rem 1.2rem; letter-spacing: 0.1em;">Đơn hàng gần nhất</div>
+                <h2 class="display-6 fw-bolder mb-2" style="font-family: Manrope, Inter, sans-serif; letter-spacing: -0.02em;">#@newest.OrderID</h2>
+                <div class="fs-6 text-muted fw-bold">Ngày mua: @newest.OrderTime.ToString("dd/MM/yyyy HH:mm")</div>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <div class="small text-uppercase fw-bold text-muted mb-1" style="letter-spacing: 0.05em;">Trạng thái</div>
+                <div class="fs-5 fw-black mb-3" style="color: var(--st-text);">@(newest.StatusDescription ?? newest.Status)</div>
+                <a class="btn btn-primary btn-lg fw-bold shadow-sm" asp-action="Detail" asp-route-id="@newest.OrderID" style="border-radius: 12px;">Xem chi tiết &rarr;</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        @foreach (var o in Model)
+        {
+            var badgeStyles = (o.Status ?? string.Empty) switch
+            {
+                "1" => "background: #fff3cd; color: #856404;",
+                "2" => "background: #d1ecf1; color: #0c5460;",
+                "3" => "background: #cce5ff; color: #004085;",
+                "4" => "background: #d4edda; color: #155724;",
+                "-1" => "background: #f8d7da; color: #721c24;",
+                "-2" => "background: #e2e3e5; color: #383d41;",
+                _ => "background: var(--st-surface-low); color: var(--st-text-muted);"
+            };
+            
+            <div class="col-md-6 col-lg-4">
+                <article class="p-4 h-100 d-flex flex-column shadow-sm st-hover-scale" style="background: var(--st-surface-card); border-radius: 20px; transition: transform 0.3s ease, box-shadow 0.3s ease;">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div>
+                            <div class="small text-uppercase fw-bold text-muted mb-1" style="letter-spacing: 0.05em;">Mã Đơn</div>
+                            <div class="fs-5 fw-black" style="font-family: Manrope, Inter, sans-serif;">#@o.OrderID</div>
+                        </div>
+                        <span class="badge rounded-pill px-3 py-2 fw-bold" style="@badgeStyles border: none; font-size: 0.75rem;">
+                            @(o.StatusDescription ?? o.Status)
+                        </span>
+                    </div>
+                    
+                    <div class="mb-4 flex-grow-1">
+                        <div class="small fw-bold text-muted mb-1"><i class="far fa-calendar-alt"></i> Ngày mua: @o.OrderTime.ToString("dd/MM/yyyy")</div>
+                        <div class="small fw-bold text-muted"><i class="far fa-map"></i> Địa chỉ: <span class="fw-normal">@(string.IsNullOrWhiteSpace(o.DeliveryAddress) ? "—" : o.DeliveryAddress)</span></div>
+                    </div>
+                    
+                    <div class="mt-auto pt-3 border-top" style="border-color: rgba(193, 198, 215, 0.2) !important;">
+                        <a class="text-decoration-none fw-bold" style="color: var(--st-primary);" asp-action="Detail" asp-route-id="@o.OrderID">Xem chi tiết đơn &rarr;</a>
+                    </div>
+                </article>
+            </div>
+        }
+    </div>
+
+    @if (totalPages > 1)
+    {
+        <nav class="mt-4 mb-5 d-flex justify-content-center">
+            <div class="btn-group shadow-sm" style="border-radius: 12px; overflow: hidden;">
+                <a class="btn btn-light fw-bold px-4 @(page <= 1 ? "disabled" : "")" asp-action="Index" asp-route-page="@(page - 1)" style="border: none;">Trang trước</a>
+                <span class="btn fw-bold" style="background: var(--st-surface); color: var(--st-text-muted); border: none; pointer-events: none;">@(page) / @totalPages</span>
+                <a class="btn btn-light fw-bold px-4 @(page >= totalPages ? "disabled" : "")" asp-action="Index" asp-route-page="@(page + 1)" style="border: none;">Trang sau</a>
+            </div>
+        </nav>
+    }
+}

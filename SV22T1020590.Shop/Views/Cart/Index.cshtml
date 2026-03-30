@@ -1,0 +1,98 @@
+@model List<SV22T1020590.Models.Sales.OrderDetail>
+@{
+    ViewData["Title"] = "Giỏ hàng";
+    var map = ViewBag.ProductMap as Dictionary<int, SV22T1020590.Models.Catalog.Product> ?? new Dictionary<int, SV22T1020590.Models.Catalog.Product>();
+    decimal total = Model.Sum(x => x.Quantity * x.SalePrice);
+}
+
+<div class="mb-5 px-3 mt-4">
+    <h1 class="display-5 fw-bolder mb-2" style="font-family: Manrope, Inter, sans-serif; letter-spacing: -0.03em;">Giỏ hàng của bạn</h1>
+    <p class="text-muted fs-5">Xem lại các mặt hàng đã chọn trước khi tiến hành thanh toán.</p>
+</div>
+
+@if (Model.Count == 0)
+{
+    <div class="p-5 text-center shadow-sm" style="background: var(--st-surface-low); border-radius: 20px;">
+        <div class="fs-1 mb-3">🛒</div>
+        <h3 class="fw-bolder" style="font-family: Manrope, Inter, sans-serif;">Giỏ hàng trống</h3>
+        <p class="text-muted mb-4">Chưa có sản phẩm nào được chọn.</p>
+        <a asp-controller="Product" asp-action="Index" class="btn btn-primary px-4 py-2 fw-bold" style="border-radius: 10px;">Tiếp tục mua sắm</a>
+    </div>
+}
+else
+{
+    <div class="row g-5">
+        <div class="col-lg-8">
+            <div class="d-flex flex-column gap-3">
+                @foreach (var line in Model)
+                {
+                    map.TryGetValue(line.ProductID, out var p);
+                    var name = p?.ProductName ?? ("Sản phẩm #" + line.ProductID);
+                    var img = string.IsNullOrWhiteSpace(p?.Photo)
+                        ? Url.Content("~/images/products/nophoto.png")
+                        : (p.Photo.StartsWith("http", StringComparison.OrdinalIgnoreCase) ? p.Photo : Url.Content("~/images/products/" + p.Photo));
+                    
+                    <div class="d-flex align-items-center flex-wrap flex-md-nowrap gap-4 p-4 shadow-sm" style="background: var(--st-surface-card); border-radius: 20px; border: none;">
+                        <img src="@img" alt="@name" class="rounded-3" style="width: 100px; height: 100px; object-fit: cover; background: var(--st-surface);" />
+                        
+                        <div class="flex-grow-1" style="min-width: 0;">
+                            <h3 class="h6 fw-bolder mb-1 text-truncate" style="font-family: Inter, sans-serif; white-space: normal;">@name</h3>
+                            <div class="small mb-2 fw-bold" style="color: var(--st-text-muted);">Mã: #@line.ProductID</div>
+                            <div class="fs-5 fw-bolder" style="color: var(--st-primary);">@line.SalePrice.ToString("N0") đ</div>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-4 border-start ps-4 flex-shrink-0">
+                            <form asp-action="Update" method="post" class="d-flex align-items-center gap-2 m-0">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="productId" value="@line.ProductID" />
+                                <input type="number" name="quantity" value="@line.Quantity" min="1" class="form-control text-center fw-bold bg-light border-0" style="width: 70px; border-radius: 10px;" />
+                                <button type="submit" class="btn btn-light" style="border-radius: 10px; border: 1px solid rgba(193,198,215,0.3);">↻</button>
+                            </form>
+                            
+                            <div class="text-end" style="min-width: 120px;">
+                                <div class="small fw-bold text-muted text-uppercase" style="letter-spacing: 0.05em; font-size: 0.65rem;">Thành tiền</div>
+                                <div class="fs-5 fw-black" style="font-family: Inter, sans-serif;">@((line.Quantity * line.SalePrice).ToString("N0")) đ</div>
+                            </div>
+
+                            <form asp-action="Remove" method="post" onsubmit="return confirm('Xóa mặt hàng này?');" class="m-0">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="productId" value="@line.ProductID" />
+                                <button type="submit" class="btn btn-link text-danger p-2 text-decoration-none fw-bold fs-5">&times;</button>
+                            </form>
+                        </div>
+                    </div>
+                }
+            </div>
+            
+            <div class="mt-4">
+                <form asp-action="Clear" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa toàn bộ giỏ?');">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-link text-muted text-decoration-none fw-bold px-0">&times; Xóa toàn bộ giỏ hàng</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="p-4 p-md-5 shadow-sm sticky-top" style="background: var(--st-surface-low); border-radius: 20px; top: 120px;">
+                <h3 class="h5 fw-bolder mb-4 text-uppercase" style="font-family: Manrope, Inter, sans-serif; letter-spacing: 0.05em;">Tổng quan đơn hàng</h3>
+                
+                <div class="d-flex justify-content-between mb-3 fw-bold" style="color: var(--st-text-muted);">
+                    <span>Tạm tính</span>
+                    <span>@total.ToString("N0") đ</span>
+                </div>
+                <!-- Vận chuyển và giảm giá cứng / placeholder tuỳ ý -->
+                <div class="d-flex justify-content-between mb-4 pb-4 border-bottom fw-bold" style="color: var(--st-text-muted);">
+                    <span>Vận chuyển</span>
+                    <span class="text-success">Miễn phí</span>
+                </div>
+                
+                <div class="d-flex justify-content-between mb-5">
+                    <span class="fw-bolder fs-5" style="font-family: Manrope, Inter, sans-serif;">Tổng cộng</span>
+                    <span class="fw-black fs-4" style="color: var(--st-primary); font-family: Manrope, Inter, sans-serif;">@total.ToString("N0") đ</span>
+                </div>
+                
+                <a class="btn btn-primary btn-lg w-100 fw-bold shadow-sm" asp-controller="Checkout" asp-action="Index" style="border-radius: 12px; letter-spacing: 0.02em;">Tiến hành Đặt hàng</a>
+            </div>
+        </div>
+    </div>
+}

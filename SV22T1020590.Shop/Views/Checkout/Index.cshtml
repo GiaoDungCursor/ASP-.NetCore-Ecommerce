@@ -1,0 +1,87 @@
+@model List<SV22T1020590.Models.Sales.OrderDetail>
+@{
+    ViewData["Title"] = "Đặt hàng";
+    var customer = ViewBag.Customer as SV22T1020590.Models.Partner.Customer;
+    decimal total = Model.Sum(x => x.Quantity * x.SalePrice);
+}
+
+<div class="mb-4 pt-4 px-3">
+    <div class="text-uppercase fw-bold mb-3" style="color: var(--st-text-muted); font-size: 0.8rem; letter-spacing: 0.1em;">
+        Giỏ hàng &nbsp;—&nbsp; Thanh toán
+    </div>
+    <h1 class="display-5 fw-bolder mb-2" style="font-family: Manrope, Inter, sans-serif; letter-spacing: -0.03em;">Xác nhận đặt hàng</h1>
+    <p class="text-muted fs-5">Hoàn tất địa chỉ giao hàng để chúng tôi chuẩn bị kiện hàng của bạn.</p>
+</div>
+
+<div asp-validation-summary="All" class="text-danger small mb-4 px-3"></div>
+
+<div class="row g-5">
+    <div class="col-lg-7">
+        <div class="bg-white p-4 p-md-5 shadow-sm" style="border-radius: 24px; border: 1px solid rgba(193, 198, 215, 0.2);">
+            <div class="d-flex align-items-center mb-4 pb-3 border-bottom">
+                <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-3 fw-bold" style="width: 40px; height: 40px; color: var(--st-primary);">1</div>
+                <h2 class="h4 fw-bolder mb-0" style="font-family: Manrope, Inter, sans-serif;">Thông tin Giao hàng</h2>
+            </div>
+            
+            <form asp-action="PlaceOrder" method="post">
+                @Html.AntiForgeryToken()
+                <div class="row g-4">
+                    <div class="col-12">
+                        <label class="form-label fw-bold text-uppercase" style="color: var(--st-text-muted); font-size: 0.75rem; letter-spacing: 0.05em;">Tỉnh / Thành phố</label>
+                        <select name="deliveryProvince" class="form-select form-select-lg bg-light border-0 px-3" style="border-radius: 12px;" required>
+                            <option value="">-- Chọn tỉnh/thành --</option>
+                            @foreach (var item in await SV22T1020590.BusinessLayers.DictionaryDataService.ListProvincesAsync())
+                            {
+                                if (item.ProvinceName == customer?.Province)
+                                {
+                                    <option value="@item.ProvinceName" selected>@item.ProvinceName</option>
+                                }
+                                else
+                                {
+                                    <option value="@item.ProvinceName">@item.ProvinceName</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-bold text-uppercase" style="color: var(--st-text-muted); font-size: 0.75rem; letter-spacing: 0.05em;">Địa chỉ chi tiết</label>
+                        <textarea name="deliveryAddress" class="form-control form-control-lg bg-light border-0 px-3" style="border-radius: 12px; resize: none;" rows="4" required placeholder="Số nhà, tên đường, phường/xã...">@(customer?.Address)</textarea>
+                    </div>
+                </div>
+                
+                <div class="mt-5 d-flex flex-column flex-sm-row gap-3">
+                    <button type="submit" class="btn btn-primary btn-lg fw-bold px-5 shadow-sm" style="border-radius: 12px; letter-spacing: 0.02em;">Xác nhận & Gửi đơn</button>
+                    <a class="btn btn-light btn-lg fw-bold text-muted px-4" asp-controller="Cart" asp-action="Index" style="border-radius: 12px; border: 1px solid rgba(193,198,215,0.3);">Quay lại giỏ</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="col-lg-5">
+        <div class="p-4 p-md-5 shadow-sm sticky-top" style="background: var(--st-surface-low); border-radius: 20px; top: 120px;">
+            <div class="d-flex align-items-center mb-4 pb-3 border-bottom">
+                <div class="bg-white rounded-circle d-flex align-items-center justify-content-center me-3 fw-bold shadow-sm" style="width: 40px; height: 40px; color: var(--st-primary);">2</div>
+                <h2 class="h5 fw-bolder mb-0 text-uppercase" style="font-family: Manrope, Inter, sans-serif; letter-spacing: 0.05em;">Tóm tắt đơn hàng</h2>
+            </div>
+            
+            <div class="d-flex justify-content-between mb-3 fw-bold" style="color: var(--st-text-muted);">
+                <span>Số lượng sản phẩm</span>
+                <span class="text-dark fs-5">@Model.Count</span>
+            </div>
+            <div class="d-flex justify-content-between mb-4 pb-4 border-bottom fw-bold" style="color: var(--st-text-muted);">
+                <span>Tạm tính</span>
+                <span class="text-dark fs-5">@total.ToString("N0") đ</span>
+            </div>
+            
+            <div class="d-flex justify-content-between mb-4">
+                <span class="fw-bolder fs-5" style="font-family: Manrope, Inter, sans-serif;">Tổng thanh toán</span>
+                <span class="fs-3 fw-black" style="color: var(--st-primary); font-family: Manrope, Inter, sans-serif;">@total.ToString("N0") đ</span>
+            </div>
+            
+            <div class="d-flex align-items-center gap-3 p-3 mt-4 text-muted small fw-bold bg-white shadow-sm" style="border-radius: 12px; border: 1px solid rgba(193,198,215,0.2);">
+                <div class="fs-3">🛡️</div>
+                <div>Thông tin thanh toán của bạn được bảo mật tuyệt đối.</div>
+            </div>
+        </div>
+    </div>
+</div>

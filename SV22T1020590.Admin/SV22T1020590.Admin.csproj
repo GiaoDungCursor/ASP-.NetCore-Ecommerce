@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\Layout.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.4" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    
+    <ProjectReference Include="..\SV22T1020590.BusinessLayers\SV22T1020590.BusinessLayers.csproj" />
+    <ProjectReference Include="..\SV22T1020590.DataLayers\SV22T1020590.DataLayers.csproj" />
+    <ProjectReference Include="..\SV22T1020590.Models\SV22T1020590.Models.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="example\**\*.cs" />
+    <Compile Remove="example*\**\*.cs" />
+    <Compile Remove="exmple\**\*.cs" />
+    <Compile Remove="exmple*\**\*.cs" />
+    <Content Remove="Views\example\**\*" />
+    <Content Remove="Views\example*\**\*" />
+    <Content Remove="Views\exmple\**\*" />
+    <Content Remove="Views\exmple*\**\*" />
+    <None Remove="Views\example\**\*" />
+    <None Remove="Views\example*\**\*" />
+    <None Remove="Views\exmple\**\*" />
+    <None Remove="Views\exmple*\**\*" />
+    <RazorGenerate Remove="Views\example\**\*.cshtml" />
+    <RazorGenerate Remove="Views\example*\**\*.cshtml" />
+    <RazorGenerate Remove="Views\exmple\**\*.cshtml" />
+    <RazorGenerate Remove="Views\exmple*\**\*.cshtml" />
+  </ItemGroup>
+
+</Project>
