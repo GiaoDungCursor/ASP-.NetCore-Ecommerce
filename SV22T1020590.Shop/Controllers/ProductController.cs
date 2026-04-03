@@ -43,6 +43,20 @@ namespace SV22T1020590.Shop.Controllers
             var p = ProductDAL.Get(_configuration, id);
             if (p == null || !p.IsSelling)
                 return NotFound();
+
+            var photos = ProductPhotoDAL.GetByProductID(_configuration, id)
+                .Where(x => !x.IsHidden)
+                .OrderBy(x => x.DisplayOrder)
+                .ThenBy(x => x.PhotoID)
+                .ToList();
+
+            var attributes = ProductAttributeDAL.GetByProductID(_configuration, id)
+                .OrderBy(x => x.DisplayOrder)
+                .ThenBy(x => x.AttributeID)
+                .ToList();
+
+            ViewBag.ProductPhotos = photos;
+            ViewBag.ProductAttributes = attributes;
             ViewData["Title"] = p.ProductName;
             return View(p);
         }

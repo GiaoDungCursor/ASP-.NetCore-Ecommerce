@@ -1,4 +1,5 @@
 @model List<SV22T1020590.Models.Catalog.Product>
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
 @{
     ViewData["Title"] = "Danh mục mặt hàng";
     var categories = ViewBag.Categories as List<SV22T1020590.Models.Catalog.Category> ?? new List<SV22T1020590.Models.Catalog.Category>();
@@ -16,6 +17,7 @@
     var step = 50000m;
     var minSelected = minPrice ?? minDomain;
     var maxSelected = maxPrice ?? maxDomain;
+    var adminBaseUrl = (Configuration["ImageFallback:AdminBaseUrl"] ?? "https://localhost:7007").TrimEnd('/');
 }
 
 <div class="mb-5 text-center px-3" style="margin-top: 1rem;">
@@ -89,15 +91,36 @@ else
     <div class="st-product-grid mb-5 pb-5">
         @foreach (var product in Model)
         {
-            var img = string.IsNullOrWhiteSpace(product.Photo)
-                ? Url.Content("~/images/products/nophoto.png")
-                : (product.Photo.StartsWith("http", StringComparison.OrdinalIgnoreCase) ? product.Photo : Url.Content("~/images/products/" + product.Photo));
+            var rawPhoto = product.Photo?.Trim();
+            var nophoto = Url.Content("~/images/products/nophoto.png");
+            var img = string.IsNullOrWhiteSpace(rawPhoto)
+                ? nophoto
+                : (rawPhoto.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+                    ? rawPhoto
+                    : (rawPhoto.StartsWith("~/", StringComparison.OrdinalIgnoreCase)
+                        ? Url.Content(rawPhoto)
+                        : (rawPhoto.StartsWith("/", StringComparison.OrdinalIgnoreCase)
+                            ? rawPhoto
+                            : Url.Content("~/images/products/" + rawPhoto.TrimStart('/')))));
+            var adminImg = string.IsNullOrWhiteSpace(rawPhoto)
+                ? nophoto
+                : (rawPhoto.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+                    ? rawPhoto
+                    : (rawPhoto.StartsWith("~/", StringComparison.OrdinalIgnoreCase)
+                        ? $"{adminBaseUrl}{rawPhoto.Substring(1)}"
+                        : (rawPhoto.StartsWith("/", StringComparison.OrdinalIgnoreCase)
+                            ? $"{adminBaseUrl}{rawPhoto}"
+                            : $"{adminBaseUrl}/images/products/{rawPhoto.TrimStart('/')}")));
             
             <article class="st-product-card d-flex flex-column h-100 p-3 position-relative" style="background: var(--st-surface-card); border: none;">
                 <!-- Product Image -->
                 <div class="position-relative overflow-hidden mb-3" style="background: var(--st-surface); border-radius: 12px; aspect-ratio: 1;">
                     <a asp-action="Detail" asp-route-id="@product.ProductID" class="d-block w-100 h-100">
-                        <img src="@img" class="w-100 h-100 object-fit-cover st-hover-scale" alt="@product.ProductName" style="transition: transform 0.3s ease; mix-blend-mode: multiply;" />
+                        <img src="@img"
+                             class="w-100 h-100 object-fit-cover st-hover-scale"
+                             alt="@product.ProductName"
+                             onerror="if(!this.dataset.adminTried){this.dataset.adminTried='1';this.src='@adminImg';}else{this.onerror=null;this.src='@nophoto';}"
+                             style="transition: transform 0.3s ease; mix-blend-mode: multiply;" />
                     </a>
                     
                     <!-- Quick Add Button -->

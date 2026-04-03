@@ -1,9 +1,55 @@
 @model SV22T1020590.Models.Catalog.Product
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
 @{
     ViewData["Title"] = Model.ProductName;
-    var img = string.IsNullOrWhiteSpace(Model.Photo)
-        ? Url.Content("~/images/products/nophoto.png")
-        : (Model.Photo.StartsWith("http", StringComparison.OrdinalIgnoreCase) ? Model.Photo : Url.Content("~/images/products/" + Model.Photo));
+    var photos = ViewBag.ProductPhotos as List<SV22T1020590.Models.Catalog.ProductPhoto> ?? new List<SV22T1020590.Models.Catalog.ProductPhoto>();
+    var attributes = ViewBag.ProductAttributes as List<SV22T1020590.Models.Catalog.ProductAttribute> ?? new List<SV22T1020590.Models.Catalog.ProductAttribute>();
+    var adminBaseUrl = (Configuration["ImageFallback:AdminBaseUrl"] ?? "https://localhost:7007").TrimEnd('/');
+    string ResolveImg(string? raw)
+    {
+        var value = raw?.Trim();
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return Url.Content("~/images/products/nophoto.png");
+        }
+        if (value.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+        {
+            return value;
+        }
+        if (value.StartsWith("~/", StringComparison.OrdinalIgnoreCase))
+        {
+            return Url.Content(value);
+        }
+        if (value.StartsWith("/", StringComparison.OrdinalIgnoreCase))
+        {
+            return value;
+        }
+        return Url.Content("~/images/products/" + value.TrimStart('/'));
+    }
+    string ResolveAdminImg(string? raw)
+    {
+        var value = raw?.Trim();
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return Url.Content("~/images/products/nophoto.png");
+        }
+        if (value.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+        {
+            return value;
+        }
+        if (value.StartsWith("~/", StringComparison.OrdinalIgnoreCase))
+        {
+            return $"{adminBaseUrl}{value.Substring(1)}";
+        }
+        if (value.StartsWith("/", StringComparison.OrdinalIgnoreCase))
+        {
+            return $"{adminBaseUrl}{value}";
+        }
+        return $"{adminBaseUrl}/images/products/{value.TrimStart('/')}";
+    }
+    var rawPhoto = Model.Photo?.Trim();
+    var img = ResolveImg(rawPhoto);
+    var adminImg = ResolveAdminImg(rawPhoto);
 }
 
 <div class="mb-4">
@@ -15,7 +61,35 @@
 <div class="bg-white shadow-lg mb-5" style="border-radius: 24px; overflow: hidden; border: 1px solid rgba(193, 198, 215, 0.15);">
     <div class="row g-0">
         <div class="col-md-6" style="background: var(--st-surface); padding: 4rem;">
-            <img src="@img" class="img-fluid" alt="@Model.ProductName" style="width:100%; object-fit:contain; mix-blend-mode: multiply; transform: scale(1.05);" />
+            <img id="mainProductImage"
+                 src="@img"
+                 class="img-fluid"
+                 alt="@Model.ProductName"
+                 data-admin-src="@adminImg"
+                 onerror="if(!this.dataset.adminTried){this.dataset.adminTried='1';this.src=this.dataset.adminSrc;}else{this.onerror=null;this.src='@Url.Content("~/images/products/nophoto.png")';}"
+                 style="width:100%; object-fit:contain; mix-blend-mode: multiply; transform: scale(1.05);" />
+            @if (photos.Any())
+            {
+                <div class="d-flex flex-wrap gap-2 mt-4">
+                    @foreach (var photo in photos)
+                    {
+                        var thumb = ResolveImg(photo.Photo);
+                        var adminThumb = ResolveAdminImg(photo.Photo);
+                        <button type="button"
+                                class="btn p-0 border-0"
+                                style="width:76px; height:76px; border-radius:12px; overflow:hidden; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.08);"
+                                data-main-src="@thumb"
+                                data-main-admin-src="@adminThumb"
+                                onclick="switchMainProductImage(this)">
+                            <img src="@thumb"
+                                 alt="@photo.Description"
+                                 data-admin-src="@adminThumb"
+                                 onerror="if(!this.dataset.adminTried){this.dataset.adminTried='1';this.src=this.dataset.adminSrc;}else{this.onerror=null;this.src='@Url.Content("~/images/products/nophoto.png")';}"
+                                 style="width:100%; height:100%; object-fit:cover;" />
+                        </button>
+                    }
+                </div>
+            }
         </div>
         <div class="col-md-6 p-4 p-md-5 d-flex flex-column justify-content-center">
             <div class="mb-4">
@@ -54,3 +128,42 @@
         </div>
     </div>
 </div>
+
+@if (attributes.Any())
+{
+    <div class="bg-white shadow-sm mb-5 p-4 p-md-5" style="border-radius: 20px; border: 1px solid rgba(193, 198, 215, 0.15);">
+        <h2 class="h4 fw-bold mb-4" style="font-family: Manrope, Inter, sans-serif;">Thuộc tính sản phẩm</h2>
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <tbody>
+                    @foreach (var item in attributes)
+                    {
+                        <tr>
+                            <th class="text-muted fw-semibold" style="width: 35%;">@item.AttributeName</th>
+                            <td class="fw-medium">@item.AttributeValue</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+@section Scripts {
+<script>
+    function switchMainProductImage(button) {
+        const main = document.getElementById("mainProductImage");
+        if (!main) return;
+
+        const nextSrc = button.getAttribute("data-main-src");
+        const nextAdminSrc = button.getAttribute("data-main-admin-src");
+        if (!nextSrc) return;
+
+        main.dataset.adminTried = "";
+        if (nextAdminSrc) {
+            main.dataset.adminSrc = nextAdminSrc;
+        }
+        main.src = nextSrc;
+    }
+</script>
+}

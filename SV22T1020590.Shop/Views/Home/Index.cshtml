@@ -1,7 +1,9 @@
 @model List<SV22T1020590.Models.Catalog.Product>
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
 @{
     ViewData["Title"] = "Trang chủ";
     ViewData["FullWidth"] = true;
+    var adminBaseUrl = (Configuration["ImageFallback:AdminBaseUrl"] ?? "https://localhost:7007").TrimEnd('/');
 }
 
 <!-- Hero Section: Editorial Impact -->
@@ -98,16 +100,37 @@
     <div class="st-product-grid mb-5">
         @foreach (var p in Model)
         {
-            var img = string.IsNullOrWhiteSpace(p.Photo)
-                ? Url.Content("~/images/products/nophoto.png")
-                : (p.Photo.StartsWith("http", StringComparison.OrdinalIgnoreCase) ? p.Photo : Url.Content("~/images/products/" + p.Photo));
+            var rawPhoto = p.Photo?.Trim();
+            var nophoto = Url.Content("~/images/products/nophoto.png");
+            var img = string.IsNullOrWhiteSpace(rawPhoto)
+                ? nophoto
+                : (rawPhoto.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+                    ? rawPhoto
+                    : (rawPhoto.StartsWith("~/", StringComparison.OrdinalIgnoreCase)
+                        ? Url.Content(rawPhoto)
+                        : (rawPhoto.StartsWith("/", StringComparison.OrdinalIgnoreCase)
+                            ? rawPhoto
+                            : Url.Content("~/images/products/" + rawPhoto.TrimStart('/')))));
+            var adminImg = string.IsNullOrWhiteSpace(rawPhoto)
+                ? nophoto
+                : (rawPhoto.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+                    ? rawPhoto
+                    : (rawPhoto.StartsWith("~/", StringComparison.OrdinalIgnoreCase)
+                        ? $"{adminBaseUrl}{rawPhoto.Substring(1)}"
+                        : (rawPhoto.StartsWith("/", StringComparison.OrdinalIgnoreCase)
+                            ? $"{adminBaseUrl}{rawPhoto}"
+                            : $"{adminBaseUrl}/images/products/{rawPhoto.TrimStart('/')}")));
             
             <article class="st-product-card d-flex flex-column h-100 p-3 position-relative" style="background: var(--st-surface-card); border: none;">
                 <!-- Product Image -->
                 <div class="position-relative overflow-hidden mb-3" style="background: var(--st-surface); border-radius: 12px; aspect-ratio: 1;">
                     <span class="position-absolute badge rounded-pill z-2" style="top: 12px; left: 12px; background: #a36700; color: #fffbff; border: none; font-size: 0.65rem; padding: 0.4rem 0.6rem; letter-spacing: 0.1em;">NEW</span>
                     <a asp-controller="Product" asp-action="Detail" asp-route-id="@p.ProductID" class="d-block w-100 h-100">
-                        <img src="@img" class="w-100 h-100 object-fit-cover st-hover-scale" alt="@p.ProductName" style="transition: transform 0.3s ease; mix-blend-mode: multiply;" />
+                        <img src="@img"
+                             class="w-100 h-100 object-fit-cover st-hover-scale"
+                             alt="@p.ProductName"
+                             onerror="if(!this.dataset.adminTried){this.dataset.adminTried='1';this.src='@adminImg';}else{this.onerror=null;this.src='@nophoto';}"
+                             style="transition: transform 0.3s ease; mix-blend-mode: multiply;" />
                     </a>
                     
                     <!-- Quick Add Button -->

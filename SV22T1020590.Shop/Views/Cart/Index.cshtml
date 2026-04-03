@@ -28,9 +28,16 @@ else
                 {
                     map.TryGetValue(line.ProductID, out var p);
                     var name = p?.ProductName ?? ("Sản phẩm #" + line.ProductID);
-                    var img = string.IsNullOrWhiteSpace(p?.Photo)
+                    var rawPhoto = p?.Photo?.Trim();
+                    var img = string.IsNullOrWhiteSpace(rawPhoto)
                         ? Url.Content("~/images/products/nophoto.png")
-                        : (p.Photo.StartsWith("http", StringComparison.OrdinalIgnoreCase) ? p.Photo : Url.Content("~/images/products/" + p.Photo));
+                        : (rawPhoto.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+                            ? rawPhoto
+                            : (rawPhoto.StartsWith("~/", StringComparison.OrdinalIgnoreCase)
+                                ? Url.Content(rawPhoto)
+                                : (rawPhoto.StartsWith("/", StringComparison.OrdinalIgnoreCase)
+                                    ? rawPhoto
+                                    : Url.Content("~/images/products/" + rawPhoto.TrimStart('/')))));
                     
                     <div class="d-flex align-items-center flex-wrap flex-md-nowrap gap-4 p-4 shadow-sm" style="background: var(--st-surface-card); border-radius: 20px; border: none;">
                         <img src="@img" alt="@name" class="rounded-3" style="width: 100px; height: 100px; object-fit: cover; background: var(--st-surface);" />

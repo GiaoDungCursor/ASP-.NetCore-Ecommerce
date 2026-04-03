@@ -99,8 +99,17 @@ namespace SV22T1020590.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Save(Product product)
+        public async Task<IActionResult> Save(Product product, IFormFile? uploadedMainPhoto)
         {
+            if (uploadedMainPhoto != null && uploadedMainPhoto.Length > 0)
+            {
+                product.Photo = await SaveProductImageAsync(uploadedMainPhoto);
+            }
+            else if (!string.IsNullOrWhiteSpace(product.Photo))
+            {
+                product.Photo = product.Photo.Trim();
+            }
+
             if (string.IsNullOrWhiteSpace(product.ProductName))
                 ModelState.AddModelError(nameof(product.ProductName), "Vui lòng nhập tên mặt hàng.");
 
@@ -138,7 +147,7 @@ namespace SV22T1020590.Admin.Controllers
             }
             else
             {
-                // Preserve existing Photo if Edit screen doesn't allow editing it (photos managed via ListPhotos)
+                // Preserve existing photo when user does not pick/upload a new one.
                 if (string.IsNullOrWhiteSpace(product.Photo))
                 {
                     var existing = ProductDAL.Get(_configuration, product.ProductID);
@@ -345,18 +354,7 @@ namespace SV22T1020590.Admin.Controllers
             // Handle file upload first
             if (uploadedFile != null && uploadedFile.Length > 0)
             {
-                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "products");
-                Directory.CreateDirectory(uploadsFolder);
-
-                var uniqueFileName = $"{Guid.NewGuid()}_{uploadedFile.FileName}";
-                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await uploadedFile.CopyToAsync(fileStream);
-                }
-
-                photo.Photo = $"/images/products/{uniqueFileName}";
+                photo.Photo = await SaveProductImageAsync(uploadedFile);
             }
             else
             {
@@ -452,18 +450,7 @@ namespace SV22T1020590.Admin.Controllers
             // Handle file upload
             if (uploadedFile != null && uploadedFile.Length > 0)
             {
-                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "products");
-                Directory.CreateDirectory(uploadsFolder);
-
-                var uniqueFileName = $"{Guid.NewGuid()}_{uploadedFile.FileName}";
-                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await uploadedFile.CopyToAsync(fileStream);
-                }
-
-                photo.Photo = $"/images/products/{uniqueFileName}";
+                photo.Photo = await SaveProductImageAsync(uploadedFile);
             }
 
             if (string.IsNullOrWhiteSpace(photo.Photo))
@@ -493,6 +480,35 @@ namespace SV22T1020590.Admin.Controllers
             }
 
             return RedirectToAction("ListPhotos", new { id });
+        }
+
+        private async Task<string> SaveProductImageAsync(IFormFile file)
+        {
+            var extension = Path.GetExtension(file.FileName);
+            var uniqueFileName = $"{Guid.NewGuid()}{extension}";
+            var relativePath = $"/images/products/{uniqueFileName}";
+
+            await using var memoryStream = new MemoryStream();
+            await file.CopyToAsync(memoryStream);
+            var content = memoryStream.ToArray();
+
+            foreach (var folder in GetProductImageFolders())
+            {
+                Directory.CreateDirectory(folder);
+                var filePath = Path.Combine(folder, uniqueFileName);
+                await System.IO.File.WriteAllBytesAsync(filePath, content);
+            }
+
+            return relativePath;
+        }
+
+        private IEnumerable<string> GetProductImageFolders()
+        {
+            var adminRoot = Directory.GetCurrentDirectory();
+            var adminFolder = Path.Combine(adminRoot, "wwwroot", "images", "products");
+            var shopFolder = Path.GetFullPath(Path.Combine(adminRoot, "..", "SV22T1020590.Shop", "wwwroot", "images", "products"));
+
+            return new[] { adminFolder, shopFolder }.Distinct(StringComparer.OrdinalIgnoreCase);
         }
     }
 }
