@@ -1,0 +1,129 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36908.2
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SV22T1020590.Shop", "..\MySolution\SV22T1020590.Shop\SV22T1020590.Shop.csproj", "{AC3E1BD2-69E8-C56B-8300-7AA6AA42D963}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SV22T1020590.DataLayers", "..\MySolution\SV22T1020590.DataLayers\SV22T1020590.DataLayers.csproj", "{7774D4A3-2068-821A-831D-6C1C76E297BD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SV22T1020590.Admin", "..\MySolution\SV22T1020590.Admin\SV22T1020590.Admin.csproj", "{3FF85D04-AA8C-894E-2271-A295FABE80A7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SV22T1020590.BusinessLayers", "..\MySolution\SV22T1020590.BusinessLayers\SV22T1020590.BusinessLayers.csproj", "{A60A4360-C1A3-2983-25F8-8CEA79C58A90}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{AFB0386B-66E0-49D4-AF05-093B31D23314}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Note", "Note", "{9E8377FC-F0F3-448B-B8B8-94737845CB21}"
+	ProjectSection(SolutionItems) = preProject
+		C:\Users\admin\Documents\Note.txt = C:\Users\admin\Documents\Note.txt
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ExampleLayout", "ExampleLayout", "{86C1B4E4-82E8-4355-A13E-B72FE5A6EF72}"
+EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "dist", "C:\Users\admin\Downloads\AdminLTE_4\node_modules\admin-lte\dist\", "{8D53C7D3-E495-38C0-E37A-352709A1EA1E}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.8"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_57183"
+		Debug.AspNetCompiler.PhysicalPath = "C:\Users\admin\Downloads\AdminLTE_4\node_modules\admin-lte\dist\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_57183\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_57183"
+		Release.AspNetCompiler.PhysicalPath = "C:\Users\admin\Downloads\AdminLTE_4\node_modules\admin-lte\dist\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_57183\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "57183"
+	EndProjectSection
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.8"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_57183"
+		Debug.AspNetCompiler.PhysicalPath = "C:\Users\admin\Downloads\AdminLTE_4\node_modules\admin-lte\dist\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_57183\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_57183"
+		Release.AspNetCompiler.PhysicalPath = "C:\Users\admin\Downloads\AdminLTE_4\node_modules\admin-lte\dist\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_57183\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "57183"
+	EndProjectSection
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.8"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_57183"
+		Debug.AspNetCompiler.PhysicalPath = "C:\Users\admin\Downloads\AdminLTE_4\node_modules\admin-lte\dist\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_57183\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_57183"
+		Release.AspNetCompiler.PhysicalPath = "C:\Users\admin\Downloads\AdminLTE_4\node_modules\admin-lte\dist\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_57183\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "57183"
+		SlnRelativePath = "C:\Users\admin\Downloads\AdminLTE_4\node_modules\admin-lte\dist\"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SV22T1020590.Models", "..\MySolution\SV22T1020590.Models\SV22T1020590.Models.csproj", "{0CD8F036-780C-DF81-6382-65B0E487F1B8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AC3E1BD2-69E8-C56B-8300-7AA6AA42D963}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC3E1BD2-69E8-C56B-8300-7AA6AA42D963}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC3E1BD2-69E8-C56B-8300-7AA6AA42D963}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC3E1BD2-69E8-C56B-8300-7AA6AA42D963}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7774D4A3-2068-821A-831D-6C1C76E297BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7774D4A3-2068-821A-831D-6C1C76E297BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7774D4A3-2068-821A-831D-6C1C76E297BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7774D4A3-2068-821A-831D-6C1C76E297BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3FF85D04-AA8C-894E-2271-A295FABE80A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FF85D04-AA8C-894E-2271-A295FABE80A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FF85D04-AA8C-894E-2271-A295FABE80A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FF85D04-AA8C-894E-2271-A295FABE80A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A60A4360-C1A3-2983-25F8-8CEA79C58A90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A60A4360-C1A3-2983-25F8-8CEA79C58A90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A60A4360-C1A3-2983-25F8-8CEA79C58A90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A60A4360-C1A3-2983-25F8-8CEA79C58A90}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D53C7D3-E495-38C0-E37A-352709A1EA1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D53C7D3-E495-38C0-E37A-352709A1EA1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D53C7D3-E495-38C0-E37A-352709A1EA1E}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D53C7D3-E495-38C0-E37A-352709A1EA1E}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{0CD8F036-780C-DF81-6382-65B0E487F1B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CD8F036-780C-DF81-6382-65B0E487F1B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CD8F036-780C-DF81-6382-65B0E487F1B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CD8F036-780C-DF81-6382-65B0E487F1B8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{AC3E1BD2-69E8-C56B-8300-7AA6AA42D963} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{7774D4A3-2068-821A-831D-6C1C76E297BD} = {AFB0386B-66E0-49D4-AF05-093B31D23314}
+		{3FF85D04-AA8C-894E-2271-A295FABE80A7} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{A60A4360-C1A3-2983-25F8-8CEA79C58A90} = {AFB0386B-66E0-49D4-AF05-093B31D23314}
+		{8D53C7D3-E495-38C0-E37A-352709A1EA1E} = {86C1B4E4-82E8-4355-A13E-B72FE5A6EF72}
+		{0CD8F036-780C-DF81-6382-65B0E487F1B8} = {AFB0386B-66E0-49D4-AF05-093B31D23314}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C2C091FD-538C-4F8E-A6CB-5C3BC6F3F284}
+	EndGlobalSection
+EndGlobal
