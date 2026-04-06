@@ -88,8 +88,8 @@ namespace SV22T1020590.DataLayers
                 using (var cmd = new SqlCommand(sql, connection))
                 {
                     cmd.Parameters.AddWithValue("@ProductID", photo.ProductID);
-                    cmd.Parameters.AddWithValue("@Photo", photo.Photo);
-                    cmd.Parameters.AddWithValue("@Description", photo.Description);
+                    cmd.Parameters.AddWithValue("@Photo", photo.Photo ?? "");
+                    cmd.Parameters.AddWithValue("@Description", photo.Description ?? "");
                     cmd.Parameters.AddWithValue("@DisplayOrder", photo.DisplayOrder);
                     cmd.Parameters.AddWithValue("@IsHidden", photo.IsHidden);
 
@@ -114,8 +114,8 @@ namespace SV22T1020590.DataLayers
                 using (var cmd = new SqlCommand(sql, connection))
                 {
                     cmd.Parameters.AddWithValue("@PhotoID", photo.PhotoID);
-                    cmd.Parameters.AddWithValue("@Photo", photo.Photo);
-                    cmd.Parameters.AddWithValue("@Description", photo.Description);
+                    cmd.Parameters.AddWithValue("@Photo", photo.Photo ?? "");
+                    cmd.Parameters.AddWithValue("@Description", photo.Description ?? "");
                     cmd.Parameters.AddWithValue("@DisplayOrder", photo.DisplayOrder);
                     cmd.Parameters.AddWithValue("@IsHidden", photo.IsHidden);
 

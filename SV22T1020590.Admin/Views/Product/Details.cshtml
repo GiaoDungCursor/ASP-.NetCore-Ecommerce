@@ -6,9 +6,17 @@
     var supplierName = ViewBag.SupplierName as string ?? "";
     var categoryName = ViewBag.CategoryName as string ?? "";
     var attributes = ViewBag.Attributes as List<SV22T1020590.Models.Catalog.ProductAttribute> ?? new List<SV22T1020590.Models.Catalog.ProductAttribute>();
-    var mainImg = string.IsNullOrWhiteSpace(Model.Photo)
-        ? Url.Content("~/images/products/nophoto.png")
-        : (Model.Photo.StartsWith("http", StringComparison.OrdinalIgnoreCase) ? Model.Photo : Url.Content("~/images/products/" + Model.Photo));
+    var rawPhoto = (Model.Photo ?? "").Trim();
+    var noPhoto = Url.Content("~/images/products/nophoto.png");
+    var mainImg = string.IsNullOrWhiteSpace(rawPhoto)
+        ? noPhoto
+        : (rawPhoto.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || rawPhoto.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
+            ? rawPhoto
+            : (rawPhoto.StartsWith("~/", StringComparison.OrdinalIgnoreCase)
+                ? Url.Content(rawPhoto)
+                : (rawPhoto.StartsWith("/", StringComparison.OrdinalIgnoreCase)
+                    ? rawPhoto
+                    : Url.Content("~/images/products/" + rawPhoto.TrimStart('/')))));
 }
 
 <div class="row">
@@ -89,7 +97,11 @@
                     </div>
                     <div class="col-md-6">
                         <div class="text-center">
-                            <img src="@mainImg" alt="@Model.ProductName" class="img-fluid rounded" style="max-height: 400px;" />
+                            <img src="@mainImg"
+                                 alt="@Model.ProductName"
+                                 class="img-fluid rounded"
+                                 style="max-height: 400px;"
+                                 onerror="this.onerror=null;this.src='@noPhoto';" />
                         </div>
                     </div>
                 </div>

@@ -42,6 +42,30 @@ namespace SV22T1020590.Admin.Controllers
             return null;
         }
 
+        private static int ParseStatusCode(OrderModel? order)
+        {
+            if (order == null) return 0;
+            return int.TryParse(order.Status?.Trim(), out var code) ? code : 0;
+        }
+
+        private static bool CanAcceptOrder(OrderModel? order) => ParseStatusCode(order) == (int)OrderStatusEnum.New;
+        private static bool CanShipOrder(OrderModel? order) => ParseStatusCode(order) == (int)OrderStatusEnum.Accepted;
+        private static bool CanFinishOrder(OrderModel? order) => ParseStatusCode(order) == (int)OrderStatusEnum.Shipping;
+        private static bool CanCancelOrder(OrderModel? order)
+        {
+            var code = ParseStatusCode(order);
+            return code == (int)OrderStatusEnum.New || code == (int)OrderStatusEnum.Accepted;
+        }
+        private static bool CanRejectOrder(OrderModel? order) => ParseStatusCode(order) == (int)OrderStatusEnum.New;
+        private static bool CanEditOrderItems(OrderModel? order) => ParseStatusCode(order) == (int)OrderStatusEnum.New;
+        private static bool CanDeleteOrder(OrderModel? order)
+        {
+            var code = ParseStatusCode(order);
+            return code == (int)OrderStatusEnum.Cancelled
+                   || code == (int)OrderStatusEnum.Rejected
+                   || code == (int)OrderStatusEnum.Completed;
+        }
+
         // GET: Order
         public IActionResult Index()
         {
@@ -194,6 +218,13 @@ namespace SV22T1020590.Admin.Controllers
 
             ViewBag.OrderId = id;
             ViewBag.ProductMap = productMap;
+            ViewBag.CanAccept = CanAcceptOrder(order);
+            ViewBag.CanShipping = CanShipOrder(order);
+            ViewBag.CanFinish = CanFinishOrder(order);
+            ViewBag.CanCancel = CanCancelOrder(order);
+            ViewBag.CanReject = CanRejectOrder(order);
+            ViewBag.CanEditItems = CanEditOrderItems(order);
+            ViewBag.CanDeleteOrder = CanDeleteOrder(order);
             return View(order);
         }
 
@@ -232,6 +263,14 @@ namespace SV22T1020590.Admin.Controllers
         [HttpGet]
         public IActionResult AddCartItem(int id, int productId)
         {
+            var order = OrderDAL.Get(_configuration, id);
+            if (order == null) return RedirectToAction(nameof(Index));
+            if (!CanEditOrderItems(order))
+            {
+                TempData["Error"] = "Đơn hàng ở trạng thái hiện tại không thể chỉnh sửa mặt hàng.";
+                return RedirectToAction(nameof(Detail), new { id });
+            }
+
             var product = ProductDAL.Get(_configuration, productId);
             var salePrice = product?.Price ?? 0m;
             var success = OrderDAL.UpdateCartItem(_configuration, id, productId, 1, salePrice);
@@ -253,6 +292,14 @@ namespace SV22T1020590.Admin.Controllers
         {
             if (id > 0)
             {
+                var order = OrderDAL.Get(_configuration, id);
+                if (order == null) return RedirectToAction(nameof(Index));
+                if (!CanEditOrderItems(order))
+                {
+                    TempData["Error"] = "Đơn hàng ở trạng thái hiện tại không thể chỉnh sửa mặt hàng.";
+                    return RedirectToAction(nameof(Detail), new { id });
+                }
+
                 var product = ProductDAL.Get(_configuration, productId);
                 var actualPrice = salePrice > 0 ? salePrice : (product?.Price ?? 0m);
                 var success = OrderDAL.UpdateCartItem(_configuration, id, productId, quantity, actualPrice);
@@ -297,6 +344,14 @@ namespace SV22T1020590.Admin.Controllers
         {
             if (id > 0)
             {
+                var order = OrderDAL.Get(_configuration, id);
+                if (order == null) return RedirectToAction(nameof(Index));
+                if (!CanEditOrderItems(order))
+                {
+                    TempData["Error"] = "Đơn hàng ở trạng thái hiện tại không thể chỉnh sửa mặt hàng.";
+                    return RedirectToAction(nameof(Detail), new { id });
+                }
+
                 var product = ProductDAL.Get(_configuration, productId);
                 var actualPrice = salePrice > 0 ? salePrice : (product?.Price ?? 0m);
                 var success = OrderDAL.UpdateCartItem(_configuration, id, productId, quantity, actualPrice);
@@ -340,6 +395,14 @@ namespace SV22T1020590.Admin.Controllers
         {
             if (id > 0)
             {
+                var order = OrderDAL.Get(_configuration, id);
+                if (order == null) return RedirectToAction(nameof(Index));
+                if (!CanEditOrderItems(order))
+                {
+                    TempData["Error"] = "Đơn hàng ở trạng thái hiện tại không thể chỉnh sửa mặt hàng.";
+                    return RedirectToAction(nameof(Detail), new { id });
+                }
+
                 var success = OrderDAL.RemoveCartItem(_configuration, id, productId);
                 TempData[success ? "Success" : "Error"] = success
                     ? $"Removed product {productId} from order {id}."
@@ -372,6 +435,14 @@ namespace SV22T1020590.Admin.Controllers
         {
             if (id > 0)
             {
+                var order = OrderDAL.Get(_configuration, id);
+                if (order == null) return RedirectToAction(nameof(Index));
+                if (!CanEditOrderItems(order))
+                {
+                    TempData["Error"] = "Đơn hàng ở trạng thái hiện tại không thể chỉnh sửa mặt hàng.";
+                    return RedirectToAction(nameof(Detail), new { id });
+                }
+
                 var success = OrderDAL.ClearCart(_configuration, id);
                 TempData["Success"] = success ? $"Cleared cart for order {id}." : $"Could not clear cart for order {id}.";
                 return RedirectToAction(nameof(Detail), new { id });
@@ -396,6 +467,14 @@ namespace SV22T1020590.Admin.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult AcceptPost(int id)
         {
+            var order = OrderDAL.Get(_configuration, id);
+            if (order == null) return RedirectToAction(nameof(Index));
+            if (!CanAcceptOrder(order))
+            {
+                TempData["Error"] = "Trạng thái hiện tại không thể duyệt đơn.";
+                return RedirectToAction(nameof(Detail), new { id });
+            }
+
             OrderDAL.SetStatus(_configuration, id, ((int)OrderStatusEnum.Accepted).ToString(), CurrentEmployeeId());
             TempData["Success"] = $"Order {id} accepted.";
             return RedirectToAction(nameof(Detail), new { id });
@@ -429,6 +508,14 @@ namespace SV22T1020590.Admin.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult ShippingPost(int id, int shipperID)
         {
+            var order = OrderDAL.Get(_configuration, id);
+            if (order == null) return RedirectToAction(nameof(Index));
+            if (!CanShipOrder(order))
+            {
+                TempData["Error"] = "Trạng thái hiện tại không thể chuyển giao hàng.";
+                return RedirectToAction(nameof(Detail), new { id });
+            }
+
             if (shipperID <= 0)
             {
                 TempData["Error"] = "Vui lòng chọn người giao hàng.";
@@ -454,6 +541,14 @@ namespace SV22T1020590.Admin.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult FinishPost(int id)
         {
+            var order = OrderDAL.Get(_configuration, id);
+            if (order == null) return RedirectToAction(nameof(Index));
+            if (!CanFinishOrder(order))
+            {
+                TempData["Error"] = "Trạng thái hiện tại không thể hoàn tất đơn.";
+                return RedirectToAction(nameof(Detail), new { id });
+            }
+
             OrderDAL.SetStatus(_configuration, id, ((int)OrderStatusEnum.Completed).ToString(), CurrentEmployeeId());
             TempData["Success"] = $"Order {id} finished.";
             return RedirectToAction(nameof(Detail), new { id });
@@ -473,6 +568,14 @@ namespace SV22T1020590.Admin.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult RejectPost(int id)
         {
+            var order = OrderDAL.Get(_configuration, id);
+            if (order == null) return RedirectToAction(nameof(Index));
+            if (!CanRejectOrder(order))
+            {
+                TempData["Error"] = "Trạng thái hiện tại không thể từ chối đơn.";
+                return RedirectToAction(nameof(Detail), new { id });
+            }
+
             OrderDAL.SetStatus(_configuration, id, ((int)OrderStatusEnum.Rejected).ToString(), CurrentEmployeeId());
             TempData["Success"] = $"Order {id} rejected.";
             return RedirectToAction(nameof(Detail), new { id });
@@ -492,6 +595,14 @@ namespace SV22T1020590.Admin.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult CancelPost(int id)
         {
+            var order = OrderDAL.Get(_configuration, id);
+            if (order == null) return RedirectToAction(nameof(Index));
+            if (!CanCancelOrder(order))
+            {
+                TempData["Error"] = "Trạng thái hiện tại không thể hủy đơn.";
+                return RedirectToAction(nameof(Detail), new { id });
+            }
+
             OrderDAL.SetStatus(_configuration, id, ((int)OrderStatusEnum.Cancelled).ToString(), CurrentEmployeeId());
             TempData["Success"] = $"Order {id} cancelled.";
             return RedirectToAction(nameof(Detail), new { id });
@@ -511,6 +622,14 @@ namespace SV22T1020590.Admin.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeletePost(int id)
         {
+            var order = OrderDAL.Get(_configuration, id);
+            if (order == null) return RedirectToAction(nameof(Index));
+            if (!CanDeleteOrder(order))
+            {
+                TempData["Error"] = "Chỉ có thể xóa đơn hàng đã hoàn tất hoặc đã kết thúc.";
+                return RedirectToAction(nameof(Detail), new { id });
+            }
+
             var success = OrderDAL.Delete(_configuration, id);
             if (success)
             {

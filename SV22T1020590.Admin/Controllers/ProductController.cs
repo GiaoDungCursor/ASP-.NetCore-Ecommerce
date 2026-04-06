@@ -340,32 +340,32 @@ namespace SV22T1020590.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SavePhoto(int productId, ProductPhoto photo, IFormFile? uploadedFile)
+        public async Task<IActionResult> SavePhoto(int productId, ProductPhoto model, IFormFile? uploadedFile)
         {
             // Nếu ProductID từ form không có, lấy từ parameter
-            if (photo.ProductID == 0 && productId > 0)
+            if (model.ProductID == 0 && productId > 0)
             {
-                photo.ProductID = productId;
+                model.ProductID = productId;
             }
 
             // DEBUG: Log ProductID
-            System.Diagnostics.Debug.WriteLine($"=== DEBUG: productId param = {productId}, photo.ProductID = {photo.ProductID}, Photo = '{photo.Photo}' ===");
+            System.Diagnostics.Debug.WriteLine($"=== DEBUG: productId param = {productId}, model.ProductID = {model.ProductID}, Photo = '{model.Photo}' ===");
 
             // Handle file upload first
             if (uploadedFile != null && uploadedFile.Length > 0)
             {
-                photo.Photo = await SaveProductImageAsync(uploadedFile);
+                model.Photo = await SaveProductImageAsync(uploadedFile);
             }
             else
             {
                 // URL mode: in some cases model binding may not populate photo.Photo (prefix mismatch, cached view, etc.)
                 // So we read it directly from the posted form as a fallback.
-                if (string.IsNullOrWhiteSpace(photo.Photo))
+                if (string.IsNullOrWhiteSpace(model.Photo))
                 {
                     string? postedUrl = Request.Form["Photo"].FirstOrDefault();
                     if (string.IsNullOrWhiteSpace(postedUrl))
                     {
-                        postedUrl = Request.Form["photo.Photo"].FirstOrDefault();
+                        postedUrl = Request.Form["model.Photo"].FirstOrDefault();
                     }
                     if (string.IsNullOrWhiteSpace(postedUrl))
                     {
@@ -374,50 +374,50 @@ namespace SV22T1020590.Admin.Controllers
 
                     if (!string.IsNullOrWhiteSpace(postedUrl))
                     {
-                        photo.Photo = postedUrl.Trim();
+                        model.Photo = postedUrl.Trim();
                     }
                 }
 
                 // Trim whitespace from photo URL if no file uploaded
-                if (!string.IsNullOrEmpty(photo.Photo))
+                if (!string.IsNullOrEmpty(model.Photo))
                 {
-                    photo.Photo = photo.Photo.Trim();
+                    model.Photo = model.Photo.Trim();
                 }
             }
 
             // Validate ProductID
-            if (photo.ProductID <= 0)
+            if (model.ProductID <= 0)
             {
-                ModelState.AddModelError(string.Empty, $"ProductID không hợp lệ: {photo.ProductID}");
-                ViewBag.ProductID = photo.ProductID;
+                ModelState.AddModelError(string.Empty, $"ProductID không hợp lệ: {model.ProductID}");
+                ViewBag.ProductID = model.ProductID;
                 ViewBag.ProductName = "";
-                return View("AddPhoto", photo);
+                return View("AddPhoto", model);
             }
 
             // Validate Product exists
-            var existingProduct = ProductDAL.Get(_configuration, photo.ProductID);
+            var existingProduct = ProductDAL.Get(_configuration, model.ProductID);
             if (existingProduct == null)
             {
-                ModelState.AddModelError(string.Empty, $"Không tìm thấy sản phẩm với ID: {photo.ProductID}");
-                ViewBag.ProductID = photo.ProductID;
+                ModelState.AddModelError(string.Empty, $"Không tìm thấy sản phẩm với ID: {model.ProductID}");
+                ViewBag.ProductID = model.ProductID;
                 ViewBag.ProductName = "";
-                return View("AddPhoto", photo);
+                return View("AddPhoto", model);
             }
 
-            if (string.IsNullOrWhiteSpace(photo.Photo))
+            if (string.IsNullOrWhiteSpace(model.Photo))
             {
                 ModelState.AddModelError(string.Empty, "Vui lòng chọn file ảnh hoặc nhập URL hình ảnh.");
-                ViewBag.ProductID = photo.ProductID;
+                ViewBag.ProductID = model.ProductID;
                 ViewBag.ProductName = existingProduct?.ProductName ?? "";
-                return View("AddPhoto", photo);
+                return View("AddPhoto", model);
             }
 
-            if (ProductPhotoDAL.Add(_configuration, photo))
+            if (ProductPhotoDAL.Add(_configuration, model))
             {
                 TempData["SuccessMessage"] = "Thêm hình ảnh thành công!";
             }
 
-            return RedirectToAction("ListPhotos", new { id = photo.ProductID });
+            return RedirectToAction("ListPhotos", new { id = model.ProductID });
         }
 
         [HttpGet]
@@ -439,35 +439,78 @@ namespace SV22T1020590.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdatePhoto(ProductPhoto photo, IFormFile? uploadedFile)
+        public async Task<IActionResult> UpdatePhoto(ProductPhoto model, IFormFile? uploadedFile)
         {
-            // Trim whitespace from photo URL
-            if (!string.IsNullOrEmpty(photo.Photo))
+            if (model.PhotoID <= 0 && long.TryParse(Request.Form["PhotoID"], out var postedPhotoId))
             {
-                photo.Photo = photo.Photo.Trim();
+                model.PhotoID = postedPhotoId;
+            }
+
+            var existingPhoto = model.PhotoID > 0
+                ? ProductPhotoDAL.Get(_configuration, (int)model.PhotoID)
+                : null;
+            if (existingPhoto == null)
+            {
+                TempData["SuccessMessage"] = "Không tìm thấy hình ảnh cần cập nhật.";
+                return RedirectToAction("Index");
+            }
+
+            if (model.ProductID <= 0)
+            {
+                model.ProductID = existingPhoto.ProductID;
+            }
+
+            var postedDescription = Request.Form["Description"].FirstOrDefault();
+            if (string.IsNullOrWhiteSpace(postedDescription))
+            {
+                postedDescription = Request.Form["photo.Description"].FirstOrDefault();
+            }
+            if (!string.IsNullOrWhiteSpace(postedDescription))
+            {
+                model.Description = postedDescription.Trim();
+            }
+            else if (string.IsNullOrWhiteSpace(model.Description))
+            {
+                // Keep previous description when client does not post this field.
+                model.Description = existingPhoto.Description ?? string.Empty;
+            }
+
+            // Trim whitespace from photo URL
+            if (!string.IsNullOrEmpty(model.Photo))
+            {
+                model.Photo = model.Photo.Trim();
+            }
+            else
+            {
+                // Keep previous image path when user only updates metadata.
+                model.Photo = existingPhoto.Photo;
             }
 
             // Handle file upload
             if (uploadedFile != null && uploadedFile.Length > 0)
             {
-                photo.Photo = await SaveProductImageAsync(uploadedFile);
+                model.Photo = await SaveProductImageAsync(uploadedFile);
             }
 
-            if (string.IsNullOrWhiteSpace(photo.Photo))
+            if (string.IsNullOrWhiteSpace(model.Photo))
             {
                 ModelState.AddModelError(string.Empty, "Vui lòng chọn file ảnh hoặc nhập URL hình ảnh.");
-                var product = ProductDAL.Get(_configuration, photo.ProductID);
-                ViewBag.ProductID = photo.ProductID;
+                var product = ProductDAL.Get(_configuration, model.ProductID);
+                ViewBag.ProductID = model.ProductID;
                 ViewBag.ProductName = product?.ProductName ?? "";
-                return View("EditPhoto", photo);
+                return View("EditPhoto", model);
             }
 
-            if (ProductPhotoDAL.Update(_configuration, photo))
+            if (ProductPhotoDAL.Update(_configuration, model))
             {
                 TempData["SuccessMessage"] = "Cập nhật hình ảnh thành công!";
             }
+            else
+            {
+                TempData["SuccessMessage"] = "Không thể cập nhật hình ảnh.";
+            }
 
-            return RedirectToAction("ListPhotos", new { id = photo.ProductID });
+            return RedirectToAction("ListPhotos", new { id = model.ProductID });
         }
 
         [HttpPost]
