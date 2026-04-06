@@ -12,6 +12,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SV22T1020590.DataLayers", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SV22T1020590.BusinessLayers", "SV22T1020590.BusinessLayers\SV22T1020590.BusinessLayers.csproj", "{FB66F43E-3FCE-4DB8-8878-62C93FD64460}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{EBD4C5CD-A73C-4985-B538-B29BF352AEEE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Note", "Note", "{0BEE0C34-239F-4ED5-8C2A-0F585C3152AB}"
+	ProjectSection(SolutionItems) = preProject
+		C:\Users\admin\Documents\Note.txt = C:\Users\admin\Documents\Note.txt
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +50,13 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7542E94D-31C4-413F-A6C9-B978FB10699E} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{3F5C83B9-FA95-4544-B8D6-665B571906D3} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{04C82F12-30AC-443E-99E4-77F37984556B} = {EBD4C5CD-A73C-4985-B538-B29BF352AEEE}
+		{CD6C0329-6A8A-4F2A-AA43-4489BB856689} = {EBD4C5CD-A73C-4985-B538-B29BF352AEEE}
+		{FB66F43E-3FCE-4DB8-8878-62C93FD64460} = {EBD4C5CD-A73C-4985-B538-B29BF352AEEE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F22A37D6-9CAD-4996-89F8-22373D31F6FB}
