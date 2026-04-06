@@ -205,9 +205,7 @@ namespace SV22T1020590.Admin.Controllers
             {
                 return RedirectToAction("Index");
             }
-            ViewBag.CustomerID = id;
-            ViewBag.CustomerName = customer.CustomerName;
-            return View();
+            return View(customer);
         }
 
         [HttpPost]
@@ -223,24 +221,24 @@ namespace SV22T1020590.Admin.Controllers
             if (string.IsNullOrEmpty(newPassword))
             {
                 ModelState.AddModelError(string.Empty, "Vui lòng nhập mật khẩu mới.");
-                ViewBag.CustomerID = id;
-                ViewBag.CustomerName = customer.CustomerName;
-                return View();
+                return View(customer);
             }
 
             if (newPassword != confirmPassword)
             {
                 ModelState.AddModelError(string.Empty, "Mật khẩu mới và xác nhận mật khẩu không khớp.");
-                ViewBag.CustomerID = id;
-                ViewBag.CustomerName = customer.CustomerName;
-                return View();
+                return View(customer);
             }
 
-            if (await PartnerDataService.ChangeCustomerPasswordAsync(id, newPassword))
+            var hashedPassword = CryptHelper.HashMD5(newPassword);
+            if (await PartnerDataService.ChangeCustomerPasswordAsync(id, hashedPassword))
             {
                 TempData["SuccessMessage"] = "Đổi mật khẩu thành công!";
+                return RedirectToAction("Index");
             }
-            return RedirectToAction("Index");
+
+            ModelState.AddModelError(string.Empty, "Không thể đổi mật khẩu. Vui lòng thử lại.");
+            return View(customer);
 
         } 
     }

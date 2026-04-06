@@ -1,5 +1,5 @@
-﻿@{
-}
+@model SV22T1020590.Admin.Models.HomeDashboardViewModel
+@using System.Text.Json
 
 <!-- Thống kê nhanh -->
 <div class="row">
@@ -9,7 +9,7 @@
                 <div class="d-flex justify-content-between">
                     <div>
                         <h6 class="card-title">Doanh thu hôm nay</h6>
-                        <h3 class="mb-0">12.500.000 đ</h3>
+                        <h3 class="mb-0">@Model.RevenueToday.ToString("N0") đ</h3>
                     </div>
                     <i class="bi bi-currency-dollar fs-1 opacity-50"></i>
                 </div>
@@ -22,8 +22,8 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between">
                     <div>
-                        <h6 class="card-title">Đơn hàng</h6>
-                        <h3 class="mb-0">48</h3>
+                        <h6 class="card-title">Đơn hàng hôm nay</h6>
+                        <h3 class="mb-0">@Model.OrdersToday</h3>
                     </div>
                     <i class="bi bi-receipt fs-1 opacity-50"></i>
                 </div>
@@ -37,7 +37,7 @@
                 <div class="d-flex justify-content-between">
                     <div>
                         <h6 class="card-title">Khách hàng</h6>
-                        <h3 class="mb-0">320</h3>
+                        <h3 class="mb-0">@Model.TotalCustomers</h3>
                     </div>
                     <i class="bi bi-people fs-1 opacity-50"></i>
                 </div>
@@ -51,7 +51,7 @@
                 <div class="d-flex justify-content-between">
                     <div>
                         <h6 class="card-title">Sản phẩm</h6>
-                        <h3 class="mb-0">128</h3>
+                        <h3 class="mb-0">@Model.TotalProducts</h3>
                     </div>
                     <i class="bi bi-box-seam fs-1 opacity-50"></i>
                 </div>
@@ -86,22 +86,20 @@
             </div>
             <div class="card-body p-0">
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item d-flex justify-content-between">
-                        Laptop Dell
-                        <span class="badge bg-success">120</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                        iPhone 15
-                        <span class="badge bg-success">98</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                        Tai nghe Sony
-                        <span class="badge bg-success">76</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                        Chuột Logitech
-                        <span class="badge bg-success">65</span>
-                    </li>
+                    @if (Model.TopProducts.Any())
+                    {
+                        foreach (var item in Model.TopProducts)
+                        {
+                            <li class="list-group-item d-flex justify-content-between">
+                                @item.ProductName
+                                <span class="badge bg-success">@item.Quantity</span>
+                            </li>
+                        }
+                    }
+                    else
+                    {
+                        <li class="list-group-item text-muted text-center">Chưa có dữ liệu bán hàng</li>
+                    }
                 </ul>
             </div>
         </div>
@@ -130,27 +128,33 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>#DH00125</td>
-                            <td>Nguyễn Văn A</td>
-                            <td>01/02/2026</td>
-                            <td class="text-end">3.500.000 đ</td>
-                            <td><span class="badge bg-danger">Đang chờ duyệt</span></td>
-                        </tr>
-                        <tr>
-                            <td>#DH00126</td>
-                            <td>Trần Thị B</td>
-                            <td>01/02/2026</td>
-                            <td class="text-end">1.200.000 đ</td>
-                            <td><span class="badge bg-warning">Chờ giao hàng</span></td>
-                        </tr>
-                        <tr>
-                            <td>#DH00127</td>
-                            <td>Lê Văn C</td>
-                            <td>31/01/2026</td>
-                            <td class="text-end">8.900.000 đ</td>
-                            <td><span class="badge bg-warning">Chờ giao hàng</span></td>
-                        </tr>
+                        @if (Model.PendingOrders.Any())
+                        {
+                            foreach (var item in Model.PendingOrders)
+                            {
+                                var badgeClass = item.Status == "1"
+                                    ? "bg-danger"
+                                    : (item.Status == "2" ? "bg-warning" : "bg-info");
+                                var statusText = item.StatusDescription ?? "Đang xử lý";
+                                <tr>
+                                    <td>
+                                        <a href="@Url.Action("Detail", "Order", new { id = item.OrderID })" class="text-decoration-none fw-bold">
+                                            @($"#DH{item.OrderID}")
+                                        </a>
+                                    </td>
+                                    <td>@(string.IsNullOrWhiteSpace(item.CustomerName) ? "Khách lẻ" : item.CustomerName)</td>
+                                    <td>@item.OrderTime.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td class="text-end">@item.TotalAmount.ToString("N0") đ</td>
+                                    <td><span class="badge @badgeClass">@statusText</span></td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">Không có đơn hàng cần xử lý</td>
+                            </tr>
+                        }
                     </tbody>
                 </table>
             </div>
@@ -162,17 +166,17 @@
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        const labels = @Html.Raw(JsonSerializer.Serialize(Model.MonthlyRevenue.Select(x => x.Label).ToList()));
+        const values = @Html.Raw(JsonSerializer.Serialize(Model.MonthlyRevenue.Select(x => Math.Round(x.Revenue / 1000000m, 2)).ToList()));
         const ctx = document.getElementById('revenueChart');
 
         new Chart(ctx, {
             type: 'bar', // bar | line | pie | doughnut
             data: {
-                labels: [
-                    'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6'
-                ],
+                labels: labels,
                 datasets: [{
                     label: 'Doanh thu (triệu đồng)',
-                    data: [120, 150, 180, 140, 200, 220],
+                    data: values,
                     backgroundColor: 'rgba(13,110,253,0.7)',
                     borderRadius: 6
                 }]

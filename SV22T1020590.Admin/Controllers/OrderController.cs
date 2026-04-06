@@ -181,7 +181,19 @@ namespace SV22T1020590.Admin.Controllers
                 return RedirectToAction("Index");
             }
 
+            var productMap = new Dictionary<int, ProductModel>();
+            foreach (var item in order.OrderDetails ?? new List<OrderDetail>())
+            {
+                if (productMap.ContainsKey(item.ProductID)) continue;
+                var product = ProductDAL.Get(_configuration, item.ProductID);
+                if (product != null)
+                {
+                    productMap[item.ProductID] = product;
+                }
+            }
+
             ViewBag.OrderId = id;
+            ViewBag.ProductMap = productMap;
             return View(order);
         }
 

@@ -341,9 +341,10 @@ namespace SV22T1020590.DataLayers
                     SET Status = @Status,
                         EmployeeID = CASE WHEN @EmployeeID IS NULL THEN EmployeeID ELSE @EmployeeID END,
                         ShipperID = CASE WHEN @ShipperID IS NULL THEN ShipperID ELSE @ShipperID END,
-                        AcceptTime = CASE WHEN @Status = '2' THEN GETDATE() WHEN @Status IN ('1', '4', '-1') THEN NULL ELSE AcceptTime END,
-                        ShippedTime = CASE WHEN @Status = '3' THEN GETDATE() WHEN @Status IN ('1', '2', '4', '-1') THEN NULL ELSE ShippedTime END,
-                        FinishedTime = CASE WHEN @Status = '4' THEN GETDATE() WHEN @Status IN ('1', '2', '3', '-1') THEN NULL ELSE FinishedTime END
+                        -- Keep milestone timestamps once captured; do not clear when moving forward.
+                        AcceptTime = CASE WHEN @Status = '2' THEN ISNULL(AcceptTime, GETDATE()) ELSE AcceptTime END,
+                        ShippedTime = CASE WHEN @Status = '3' THEN ISNULL(ShippedTime, GETDATE()) ELSE ShippedTime END,
+                        FinishedTime = CASE WHEN @Status = '4' THEN ISNULL(FinishedTime, GETDATE()) ELSE FinishedTime END
                     WHERE OrderID = @OrderID";
                 using (var cmd = new SqlCommand(sql, connection))
                 {

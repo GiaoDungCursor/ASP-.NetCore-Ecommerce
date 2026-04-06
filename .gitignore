@@ -9,3 +9,9 @@ TestResults/
 *.pdb
 *.rar
 node_modules/
+fix_vietnamese_text.ps1
+MySolution.BusinessLayers/
+MySolution.DataLayers/
+MySolution.DomainModels/
+MySolution.HRM/
+MySolution.Web/

@@ -45,9 +45,16 @@
 
                 @foreach (var p in products)
                 {
-                    var photo = string.IsNullOrWhiteSpace(p.Photo)
+                    var rawPhoto = p.Photo?.Trim();
+                    var photo = string.IsNullOrWhiteSpace(rawPhoto)
                         ? Url.Content("~/images/products/nophoto.png")
-                        : (p.Photo.StartsWith("http", StringComparison.OrdinalIgnoreCase) ? p.Photo : Url.Content("~/images/products/" + p.Photo));
+                        : (rawPhoto.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+                            ? rawPhoto
+                            : (rawPhoto.StartsWith("~/", StringComparison.OrdinalIgnoreCase)
+                                ? Url.Content(rawPhoto)
+                                : (rawPhoto.StartsWith("/", StringComparison.OrdinalIgnoreCase)
+                                    ? rawPhoto
+                                    : Url.Content("~/images/products/" + rawPhoto.TrimStart('/')))));
                     <form method="post"
                           asp-action="AddCartItem" asp-controller="Order"
                           class="border rounded p-2 mb-2">
@@ -62,7 +69,10 @@
                         <div class="row mt-2">
                             <div class="col-4">
                                 <img src="@photo"
-                                     class="img-fluid border" style="max-height:100px" />
+                                     alt="@p.ProductName"
+                                     onerror="this.onerror=null;this.src='@Url.Content("~/images/products/nophoto.png")';"
+                                     class="img-fluid border rounded"
+                                     style="width:100%;height:100px;object-fit:cover;background:#fff" />
                             </div>
                             <div class="col-8">
                                 <div class="row g-2">

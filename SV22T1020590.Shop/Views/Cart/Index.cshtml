@@ -1,8 +1,10 @@
 @model List<SV22T1020590.Models.Sales.OrderDetail>
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
 @{
     ViewData["Title"] = "Giỏ hàng";
     var map = ViewBag.ProductMap as Dictionary<int, SV22T1020590.Models.Catalog.Product> ?? new Dictionary<int, SV22T1020590.Models.Catalog.Product>();
     decimal total = Model.Sum(x => x.Quantity * x.SalePrice);
+    var adminBaseUrl = (Configuration["ImageFallback:AdminBaseUrl"] ?? "https://localhost:7007").TrimEnd('/');
 }
 
 <div class="mb-5 px-3 mt-4">
@@ -29,8 +31,9 @@ else
                     map.TryGetValue(line.ProductID, out var p);
                     var name = p?.ProductName ?? ("Sản phẩm #" + line.ProductID);
                     var rawPhoto = p?.Photo?.Trim();
+                    var nophoto = Url.Content("~/images/products/nophoto.png");
                     var img = string.IsNullOrWhiteSpace(rawPhoto)
-                        ? Url.Content("~/images/products/nophoto.png")
+                        ? nophoto
                         : (rawPhoto.StartsWith("http", StringComparison.OrdinalIgnoreCase)
                             ? rawPhoto
                             : (rawPhoto.StartsWith("~/", StringComparison.OrdinalIgnoreCase)
@@ -38,9 +41,24 @@ else
                                 : (rawPhoto.StartsWith("/", StringComparison.OrdinalIgnoreCase)
                                     ? rawPhoto
                                     : Url.Content("~/images/products/" + rawPhoto.TrimStart('/')))));
+                    var adminImg = string.IsNullOrWhiteSpace(rawPhoto)
+                        ? nophoto
+                        : (rawPhoto.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+                            ? rawPhoto
+                            : (rawPhoto.StartsWith("~/", StringComparison.OrdinalIgnoreCase)
+                                ? $"{adminBaseUrl}{rawPhoto.Substring(1)}"
+                                : (rawPhoto.StartsWith("/", StringComparison.OrdinalIgnoreCase)
+                                    ? $"{adminBaseUrl}{rawPhoto}"
+                                    : $"{adminBaseUrl}/images/products/{rawPhoto.TrimStart('/')}")));
                     
                     <div class="d-flex align-items-center flex-wrap flex-md-nowrap gap-4 p-4 shadow-sm" style="background: var(--st-surface-card); border-radius: 20px; border: none;">
-                        <img src="@img" alt="@name" class="rounded-3" style="width: 100px; height: 100px; object-fit: cover; background: var(--st-surface);" />
+                        <a asp-controller="Product" asp-action="Detail" asp-route-id="@line.ProductID" class="text-decoration-none">
+                            <img src="@img"
+                                 alt="@name"
+                                 class="rounded-3"
+                                 onerror="if(!this.dataset.adminTried){this.dataset.adminTried='1';this.src='@adminImg';}else{this.onerror=null;this.src='@nophoto';}"
+                                 style="width: 112px; height: 112px; object-fit: contain; background: var(--st-surface); border: 1px solid rgba(193,198,215,0.35); padding: 6px;" />
+                        </a>
                         
                         <div class="flex-grow-1" style="min-width: 0;">
                             <h3 class="h6 fw-bolder mb-1 text-truncate" style="font-family: Inter, sans-serif; white-space: normal;">@name</h3>

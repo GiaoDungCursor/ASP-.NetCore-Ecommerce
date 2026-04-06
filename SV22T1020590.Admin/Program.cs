@@ -29,6 +29,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddSession(option =>
 {
     option.IdleTimeout = TimeSpan.FromHours(2);
+    option.Cookie.Name = "SV22T1020590.Admin.Session";
     option.Cookie.HttpOnly = true;
     option.Cookie.IsEssential = true;
 });

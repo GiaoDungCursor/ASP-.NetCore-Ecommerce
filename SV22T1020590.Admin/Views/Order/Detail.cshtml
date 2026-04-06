@@ -3,6 +3,8 @@
 @{
     ViewBag.Title = "Chi tiết đơn hàng";
     var details = Model.OrderDetails ?? new List<OrderDetail>();
+    var productMap = ViewBag.ProductMap as Dictionary<int, SV22T1020590.Models.Catalog.Product>
+                     ?? new Dictionary<int, SV22T1020590.Models.Catalog.Product>();
     int.TryParse(Model.Status?.Trim(), out var statusCode);
     var alertClass = "secondary";
     string? statusMoment = null;
@@ -171,7 +173,7 @@
             <thead class="table-secondary text-center">
                 <tr>
                     <th>STT</th>
-                    <th>Mã SP</th>
+                    <th class="text-start">Mặt hàng</th>
                     <th>ĐVT</th>
                     <th>Số lượng</th>
                     <th>Giá</th>
@@ -186,10 +188,35 @@
                     foreach (var item in details)
                     {
                         i++;
+                        productMap.TryGetValue(item.ProductID, out var product);
+                        var productName = product?.ProductName ?? $"SP #{item.ProductID}";
+                        var unit = product?.Unit ?? "—";
+                        var rawPhoto = product?.Photo?.Trim();
+                        var photo = string.IsNullOrWhiteSpace(rawPhoto)
+                            ? Url.Content("~/images/products/nophoto.png")
+                            : (rawPhoto.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+                                ? rawPhoto
+                                : (rawPhoto.StartsWith("~/", StringComparison.OrdinalIgnoreCase)
+                                    ? Url.Content(rawPhoto)
+                                    : (rawPhoto.StartsWith("/", StringComparison.OrdinalIgnoreCase)
+                                        ? rawPhoto
+                                        : Url.Content("~/images/products/" + rawPhoto.TrimStart('/')))));
                         <tr>
                             <td class="text-center">@i</td>
-                            <td>@item.ProductID</td>
-                            <td class="text-center">—</td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <img src="@photo"
+                                         alt="@productName"
+                                         class="rounded border"
+                                         style="width:44px;height:44px;object-fit:cover;"
+                                         onerror="this.onerror=null;this.src='@Url.Content("~/images/products/nophoto.png")';" />
+                                    <div>
+                                        <div class="fw-semibold">@productName</div>
+                                        <div class="small text-muted">Mã SP: @item.ProductID</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="text-center">@unit</td>
                             <td class="text-center">@item.Quantity</td>
                             <td class="text-end">@item.SalePrice.ToString("N0")</td>
                             <td class="text-end">@((item.Quantity * item.SalePrice).ToString("N0"))</td>
